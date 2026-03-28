@@ -1,0 +1,561 @@
+year,quarter,scope,segment,company_count
+2019,1,index,Global,1855
+2019,1,index,SP500,500
+2019,1,index,FTSE100,100
+2019,1,index,ASX200,200
+2019,1,index,CAC40,40
+2019,1,index,DAX40,40
+2019,1,index,EuroNext100,100
+2019,1,index,FTSE250,250
+2019,1,index,HANGSENG,75
+2019,1,index,Nikkei225,225
+2019,1,index,NSENifty50,50
+2019,1,index,SPTSX Composite,226
+2019,1,index,STI,29
+2019,1,index,SMI,20
+2019,2,index,Global,1855
+2019,2,index,SP500,500
+2019,2,index,FTSE100,100
+2019,2,index,ASX200,200
+2019,2,index,CAC40,40
+2019,2,index,DAX40,40
+2019,2,index,EuroNext100,100
+2019,2,index,FTSE250,250
+2019,2,index,HANGSENG,75
+2019,2,index,Nikkei225,225
+2019,2,index,NSENifty50,50
+2019,2,index,SPTSX Composite,226
+2019,2,index,STI,29
+2019,2,index,SMI,20
+2019,3,index,Global,1855
+2019,3,index,SP500,500
+2019,3,index,FTSE100,100
+2019,3,index,ASX200,200
+2019,3,index,CAC40,40
+2019,3,index,DAX40,40
+2019,3,index,EuroNext100,100
+2019,3,index,FTSE250,250
+2019,3,index,HANGSENG,75
+2019,3,index,Nikkei225,225
+2019,3,index,NSENifty50,50
+2019,3,index,SPTSX Composite,226
+2019,3,index,STI,29
+2019,3,index,SMI,20
+2019,4,index,Global,1855
+2019,4,index,SP500,500
+2019,4,index,FTSE100,100
+2019,4,index,ASX200,200
+2019,4,index,CAC40,40
+2019,4,index,DAX40,40
+2019,4,index,EuroNext100,100
+2019,4,index,FTSE250,250
+2019,4,index,HANGSENG,75
+2019,4,index,Nikkei225,225
+2019,4,index,NSENifty50,50
+2019,4,index,SPTSX Composite,226
+2019,4,index,STI,29
+2019,4,index,SMI,20
+2020,1,index,Global,1855
+2020,1,index,SP500,500
+2020,1,index,FTSE100,100
+2020,1,index,ASX200,200
+2020,1,index,CAC40,40
+2020,1,index,DAX40,40
+2020,1,index,EuroNext100,100
+2020,1,index,FTSE250,250
+2020,1,index,HANGSENG,75
+2020,1,index,Nikkei225,225
+2020,1,index,NSENifty50,50
+2020,1,index,SPTSX Composite,226
+2020,1,index,STI,29
+2020,1,index,SMI,20
+2020,2,index,Global,1855
+2020,2,index,SP500,500
+2020,2,index,FTSE100,100
+2020,2,index,ASX200,200
+2020,2,index,CAC40,40
+2020,2,index,DAX40,40
+2020,2,index,EuroNext100,100
+2020,2,index,FTSE250,250
+2020,2,index,HANGSENG,75
+2020,2,index,Nikkei225,225
+2020,2,index,NSENifty50,50
+2020,2,index,SPTSX Composite,226
+2020,2,index,STI,29
+2020,2,index,SMI,20
+2020,3,index,Global,1855
+2020,3,index,SP500,500
+2020,3,index,FTSE100,100
+2020,3,index,ASX200,200
+2020,3,index,CAC40,40
+2020,3,index,DAX40,40
+2020,3,index,EuroNext100,100
+2020,3,index,FTSE250,250
+2020,3,index,HANGSENG,75
+2020,3,index,Nikkei225,225
+2020,3,index,NSENifty50,50
+2020,3,index,SPTSX Composite,226
+2020,3,index,STI,29
+2020,3,index,SMI,20
+2020,4,index,Global,1855
+2020,4,index,SP500,500
+2020,4,index,FTSE100,100
+2020,4,index,ASX200,200
+2020,4,index,CAC40,40
+2020,4,index,DAX40,40
+2020,4,index,EuroNext100,100
+2020,4,index,FTSE250,250
+2020,4,index,HANGSENG,75
+2020,4,index,Nikkei225,225
+2020,4,index,NSENifty50,50
+2020,4,index,SPTSX Composite,226
+2020,4,index,STI,29
+2020,4,index,SMI,20
+2021,1,index,Global,1855
+2021,1,index,SP500,500
+2021,1,index,FTSE100,100
+2021,1,index,ASX200,200
+2021,1,index,CAC40,40
+2021,1,index,DAX40,40
+2021,1,index,EuroNext100,100
+2021,1,index,FTSE250,250
+2021,1,index,HANGSENG,75
+2021,1,index,Nikkei225,225
+2021,1,index,NSENifty50,50
+2021,1,index,SPTSX Composite,226
+2021,1,index,STI,29
+2021,1,index,SMI,20
+2021,2,index,Global,1855
+2021,2,index,SP500,500
+2021,2,index,FTSE100,100
+2021,2,index,ASX200,200
+2021,2,index,CAC40,40
+2021,2,index,DAX40,40
+2021,2,index,EuroNext100,100
+2021,2,index,FTSE250,250
+2021,2,index,HANGSENG,75
+2021,2,index,Nikkei225,225
+2021,2,index,NSENifty50,50
+2021,2,index,SPTSX Composite,226
+2021,2,index,STI,29
+2021,2,index,SMI,20
+2021,3,index,Global,1855
+2021,3,index,SP500,500
+2021,3,index,FTSE100,100
+2021,3,index,ASX200,200
+2021,3,index,CAC40,40
+2021,3,index,DAX40,40
+2021,3,index,EuroNext100,100
+2021,3,index,FTSE250,250
+2021,3,index,HANGSENG,75
+2021,3,index,Nikkei225,225
+2021,3,index,NSENifty50,50
+2021,3,index,SPTSX Composite,226
+2021,3,index,STI,29
+2021,3,index,SMI,20
+2021,4,index,Global,1855
+2021,4,index,SP500,500
+2021,4,index,FTSE100,100
+2021,4,index,ASX200,200
+2021,4,index,CAC40,40
+2021,4,index,DAX40,40
+2021,4,index,EuroNext100,100
+2021,4,index,FTSE250,250
+2021,4,index,HANGSENG,75
+2021,4,index,Nikkei225,225
+2021,4,index,NSENifty50,50
+2021,4,index,SPTSX Composite,226
+2021,4,index,STI,29
+2021,4,index,SMI,20
+2022,1,index,Global,1855
+2022,1,index,SP500,500
+2022,1,index,FTSE100,100
+2022,1,index,ASX200,200
+2022,1,index,CAC40,40
+2022,1,index,DAX40,40
+2022,1,index,EuroNext100,100
+2022,1,index,FTSE250,250
+2022,1,index,HANGSENG,75
+2022,1,index,Nikkei225,225
+2022,1,index,NSENifty50,50
+2022,1,index,SPTSX Composite,226
+2022,1,index,STI,29
+2022,1,index,SMI,20
+2022,2,index,Global,1855
+2022,2,index,SP500,500
+2022,2,index,FTSE100,100
+2022,2,index,ASX200,200
+2022,2,index,CAC40,40
+2022,2,index,DAX40,40
+2022,2,index,EuroNext100,100
+2022,2,index,FTSE250,250
+2022,2,index,HANGSENG,75
+2022,2,index,Nikkei225,225
+2022,2,index,NSENifty50,50
+2022,2,index,SPTSX Composite,226
+2022,2,index,STI,29
+2022,2,index,SMI,20
+2022,3,index,Global,1855
+2022,3,index,SP500,500
+2022,3,index,FTSE100,100
+2022,3,index,ASX200,200
+2022,3,index,CAC40,40
+2022,3,index,DAX40,40
+2022,3,index,EuroNext100,100
+2022,3,index,FTSE250,250
+2022,3,index,HANGSENG,75
+2022,3,index,Nikkei225,225
+2022,3,index,NSENifty50,50
+2022,3,index,SPTSX Composite,226
+2022,3,index,STI,29
+2022,3,index,SMI,20
+2022,4,index,Global,1855
+2022,4,index,SP500,500
+2022,4,index,FTSE100,100
+2022,4,index,ASX200,200
+2022,4,index,CAC40,40
+2022,4,index,DAX40,40
+2022,4,index,EuroNext100,100
+2022,4,index,FTSE250,250
+2022,4,index,HANGSENG,75
+2022,4,index,Nikkei225,225
+2022,4,index,NSENifty50,50
+2022,4,index,SPTSX Composite,226
+2022,4,index,STI,29
+2022,4,index,SMI,20
+2023,1,index,Global,1855
+2023,1,index,SP500,500
+2023,1,index,FTSE100,100
+2023,1,index,ASX200,200
+2023,1,index,CAC40,40
+2023,1,index,DAX40,40
+2023,1,index,EuroNext100,100
+2023,1,index,FTSE250,250
+2023,1,index,HANGSENG,75
+2023,1,index,Nikkei225,225
+2023,1,index,NSENifty50,50
+2023,1,index,SPTSX Composite,226
+2023,1,index,STI,29
+2023,1,index,SMI,20
+2023,2,index,Global,1842
+2023,2,index,SP500,500
+2023,2,index,FTSE100,100
+2023,2,index,ASX200,200
+2023,2,index,CAC40,40
+2023,2,index,DAX40,40
+2023,2,index,EuroNext100,83
+2023,2,index,FTSE250,250
+2023,2,index,HANGSENG,78
+2023,2,index,Nikkei225,225
+2023,2,index,NSENifty50,50
+2023,2,index,SPTSX Composite,226
+2023,2,index,STI,30
+2023,2,index,SMI,20
+2023,3,index,Global,1842
+2023,3,index,SP500,500
+2023,3,index,FTSE100,100
+2023,3,index,ASX200,200
+2023,3,index,CAC40,40
+2023,3,index,DAX40,40
+2023,3,index,EuroNext100,83
+2023,3,index,FTSE250,250
+2023,3,index,HANGSENG,78
+2023,3,index,Nikkei225,225
+2023,3,index,NSENifty50,50
+2023,3,index,SPTSX Composite,226
+2023,3,index,STI,30
+2023,3,index,SMI,20
+2023,4,index,Global,1857
+2023,4,index,SP500,500
+2023,4,index,FTSE100,100
+2023,4,index,ASX200,197
+2023,4,index,CAC40,40
+2023,4,index,DAX40,40
+2023,4,index,EuroNext100,100
+2023,4,index,FTSE250,250
+2023,4,index,HANGSENG,82
+2023,4,index,Nikkei225,225
+2023,4,index,NSENifty50,50
+2023,4,index,SPTSX Composite,223
+2023,4,index,STI,30
+2023,4,index,SMI,20
+2024,1,index,Global,1859
+2024,1,index,SP500,501
+2024,1,index,FTSE100,100
+2024,1,index,ASX200,199
+2024,1,index,CAC40,40
+2024,1,index,DAX40,39
+2024,1,index,EuroNext100,100
+2024,1,index,FTSE250,250
+2024,1,index,HANGSENG,82
+2024,1,index,Nikkei225,225
+2024,1,index,NSENifty50,50
+2024,1,index,SPTSX Composite,223
+2024,1,index,STI,30
+2024,1,index,SMI,20
+2024,2,index,Global,1860
+2024,2,index,SP500,500
+2024,2,index,FTSE100,100
+2024,2,index,ASX200,199
+2024,2,index,CAC40,40
+2024,2,index,DAX40,40
+2024,2,index,EuroNext100,100
+2024,2,index,FTSE250,249
+2024,2,index,HANGSENG,82
+2024,2,index,Nikkei225,225
+2024,2,index,NSENifty50,50
+2024,2,index,SPTSX Composite,225
+2024,2,index,STI,30
+2024,2,index,SMI,20
+2024,3,index,Global,1869
+2024,3,index,SP500,503
+2024,3,index,FTSE100,102
+2024,3,index,ASX200,202
+2024,3,index,CAC40,40
+2024,3,index,DAX40,40
+2024,3,index,EuroNext100,99
+2024,3,index,FTSE250,251
+2024,3,index,HANGSENG,82
+2024,3,index,Nikkei225,225
+2024,3,index,NSENifty50,50
+2024,3,index,SPTSX Composite,225
+2024,3,index,STI,30
+2024,3,index,SMI,20
+2024,4,index,Global,1862
+2024,4,index,SP500,500
+2024,4,index,FTSE100,100
+2024,4,index,ASX200,199
+2024,4,index,CAC40,40
+2024,4,index,DAX40,41
+2024,4,index,EuroNext100,101
+2024,4,index,FTSE250,250
+2024,4,index,HANGSENG,83
+2024,4,index,Nikkei225,225
+2024,4,index,NSENifty50,50
+2024,4,index,SPTSX Composite,223
+2024,4,index,STI,30
+2024,4,index,SMI,20
+2025,1,index,Global,1857
+2025,1,index,SP500,500
+2025,1,index,FTSE100,100
+2025,1,index,ASX200,200
+2025,1,index,CAC40,40
+2025,1,index,DAX40,40
+2025,1,index,EuroNext100,101
+2025,1,index,FTSE250,250
+2025,1,index,HANGSENG,83
+2025,1,index,Nikkei225,225
+2025,1,index,NSENifty50,50
+2025,1,index,SPTSX Composite,218
+2025,1,index,STI,30
+2025,1,index,SMI,20
+2025,2,index,Global,1853
+2025,2,index,SP500,500
+2025,2,index,FTSE100,100
+2025,2,index,ASX200,201
+2025,2,index,CAC40,40
+2025,2,index,DAX40,40
+2025,2,index,EuroNext100,100
+2025,2,index,FTSE250,250
+2025,2,index,HANGSENG,85
+2025,2,index,Nikkei225,225
+2025,2,index,NSENifty50,50
+2025,2,index,SPTSX Composite,212
+2025,2,index,STI,30
+2025,2,index,SMI,20
+2025,3,index,Global,1855
+2025,3,index,SP500,500
+2025,3,index,FTSE100,99
+2025,3,index,ASX200,201
+2025,3,index,CAC40,41
+2025,3,index,DAX40,39
+2025,3,index,EuroNext100,100
+2025,3,index,FTSE250,249
+2025,3,index,HANGSENG,88
+2025,3,index,Nikkei225,224
+2025,3,index,NSENifty50,50
+2025,3,index,SPTSX Composite,213
+2025,3,index,STI,30
+2025,3,index,SMI,21
+2025,4,index,Global,1855
+2025,4,index,SP500,500
+2025,4,index,FTSE100,99
+2025,4,index,ASX200,201
+2025,4,index,CAC40,41
+2025,4,index,DAX40,39
+2025,4,index,EuroNext100,100
+2025,4,index,FTSE250,249
+2025,4,index,HANGSENG,88
+2025,4,index,Nikkei225,224
+2025,4,index,NSENifty50,50
+2025,4,index,SPTSX Composite,213
+2025,4,index,STI,30
+2025,4,index,SMI,21
+2019,1,industry,Global,1855
+2019,1,industry,Consumer,321
+2019,1,industry,Financial Services,465
+2019,1,industry,Healthcare,111
+2019,1,industry,Industrial,743
+2019,1,industry,Technology,215
+2019,2,industry,Global,1855
+2019,2,industry,Consumer,321
+2019,2,industry,Financial Services,465
+2019,2,industry,Healthcare,111
+2019,2,industry,Industrial,743
+2019,2,industry,Technology,215
+2019,3,industry,Global,1855
+2019,3,industry,Consumer,321
+2019,3,industry,Financial Services,465
+2019,3,industry,Healthcare,111
+2019,3,industry,Industrial,743
+2019,3,industry,Technology,215
+2019,4,industry,Global,1855
+2019,4,industry,Consumer,321
+2019,4,industry,Financial Services,465
+2019,4,industry,Healthcare,111
+2019,4,industry,Industrial,743
+2019,4,industry,Technology,215
+2020,1,industry,Global,1855
+2020,1,industry,Consumer,321
+2020,1,industry,Financial Services,465
+2020,1,industry,Healthcare,111
+2020,1,industry,Industrial,743
+2020,1,industry,Technology,215
+2020,2,industry,Global,1855
+2020,2,industry,Consumer,321
+2020,2,industry,Financial Services,465
+2020,2,industry,Healthcare,111
+2020,2,industry,Industrial,743
+2020,2,industry,Technology,215
+2020,3,industry,Global,1855
+2020,3,industry,Consumer,321
+2020,3,industry,Financial Services,465
+2020,3,industry,Healthcare,111
+2020,3,industry,Industrial,743
+2020,3,industry,Technology,215
+2020,4,industry,Global,1855
+2020,4,industry,Consumer,321
+2020,4,industry,Financial Services,465
+2020,4,industry,Healthcare,111
+2020,4,industry,Industrial,743
+2020,4,industry,Technology,215
+2021,1,industry,Global,1855
+2021,1,industry,Consumer,321
+2021,1,industry,Financial Services,465
+2021,1,industry,Healthcare,111
+2021,1,industry,Industrial,743
+2021,1,industry,Technology,215
+2021,2,industry,Global,1855
+2021,2,industry,Consumer,321
+2021,2,industry,Financial Services,465
+2021,2,industry,Healthcare,111
+2021,2,industry,Industrial,743
+2021,2,industry,Technology,215
+2021,3,industry,Global,1855
+2021,3,industry,Consumer,321
+2021,3,industry,Financial Services,465
+2021,3,industry,Healthcare,111
+2021,3,industry,Industrial,743
+2021,3,industry,Technology,215
+2021,4,industry,Global,1855
+2021,4,industry,Consumer,321
+2021,4,industry,Financial Services,465
+2021,4,industry,Healthcare,111
+2021,4,industry,Industrial,743
+2021,4,industry,Technology,215
+2022,1,industry,Global,1855
+2022,1,industry,Consumer,321
+2022,1,industry,Financial Services,465
+2022,1,industry,Healthcare,111
+2022,1,industry,Industrial,743
+2022,1,industry,Technology,215
+2022,2,industry,Global,1855
+2022,2,industry,Consumer,321
+2022,2,industry,Financial Services,465
+2022,2,industry,Healthcare,111
+2022,2,industry,Industrial,743
+2022,2,industry,Technology,215
+2022,3,industry,Global,1855
+2022,3,industry,Consumer,321
+2022,3,industry,Financial Services,465
+2022,3,industry,Healthcare,111
+2022,3,industry,Industrial,743
+2022,3,industry,Technology,215
+2022,4,industry,Global,1855
+2022,4,industry,Consumer,321
+2022,4,industry,Financial Services,465
+2022,4,industry,Healthcare,111
+2022,4,industry,Industrial,743
+2022,4,industry,Technology,215
+2023,1,industry,Global,1855
+2023,1,industry,Consumer,321
+2023,1,industry,Financial Services,465
+2023,1,industry,Healthcare,111
+2023,1,industry,Industrial,743
+2023,1,industry,Technology,215
+2023,2,industry,Global,1842
+2023,2,industry,Consumer,319
+2023,2,industry,Financial Services,462
+2023,2,industry,Healthcare,110
+2023,2,industry,Industrial,738
+2023,2,industry,Technology,213
+2023,3,industry,Global,1842
+2023,3,industry,Consumer,319
+2023,3,industry,Financial Services,462
+2023,3,industry,Healthcare,110
+2023,3,industry,Industrial,738
+2023,3,industry,Technology,213
+2023,4,industry,Global,1857
+2023,4,industry,Consumer,324
+2023,4,industry,Financial Services,458
+2023,4,industry,Healthcare,113
+2023,4,industry,Industrial,747
+2023,4,industry,Technology,215
+2024,1,industry,Global,1859
+2024,1,industry,Consumer,326
+2024,1,industry,Financial Services,457
+2024,1,industry,Healthcare,112
+2024,1,industry,Industrial,746
+2024,1,industry,Technology,218
+2024,2,industry,Global,1860
+2024,2,industry,Consumer,325
+2024,2,industry,Financial Services,460
+2024,2,industry,Healthcare,110
+2024,2,industry,Industrial,744
+2024,2,industry,Technology,221
+2024,3,industry,Global,1869
+2024,3,industry,Consumer,327
+2024,3,industry,Financial Services,467
+2024,3,industry,Healthcare,112
+2024,3,industry,Industrial,741
+2024,3,industry,Technology,222
+2024,4,industry,Global,1862
+2024,4,industry,Consumer,318
+2024,4,industry,Financial Services,466
+2024,4,industry,Healthcare,111
+2024,4,industry,Industrial,739
+2024,4,industry,Technology,228
+2025,1,industry,Global,1857
+2025,1,industry,Consumer,319
+2025,1,industry,Financial Services,466
+2025,1,industry,Healthcare,113
+2025,1,industry,Industrial,733
+2025,1,industry,Technology,226
+2025,2,industry,Global,1853
+2025,2,industry,Consumer,323
+2025,2,industry,Financial Services,472
+2025,2,industry,Healthcare,110
+2025,2,industry,Industrial,724
+2025,2,industry,Technology,224
+2025,3,industry,Global,1855
+2025,3,industry,Consumer,322
+2025,3,industry,Financial Services,470
+2025,3,industry,Healthcare,113
+2025,3,industry,Industrial,727
+2025,3,industry,Technology,223
+2025,4,industry,Global,1855
+2025,4,industry,Consumer,322
+2025,4,industry,Financial Services,470
+2025,4,industry,Healthcare,113
+2025,4,industry,Industrial,727
+2025,4,industry,Technology,223

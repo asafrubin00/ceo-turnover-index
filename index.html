@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Global CEO Turnover Index</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="hero">
+        <nav class="topbar">
+          <div class="brand">
+            <span class="brand-mark"></span>
+            <div>
+              <p class="eyebrow">Global CEO Turnover Index</p>
+              <h1>Executive turnover, rendered as a premium public data product.</h1>
+            </div>
+          </div>
+          <div class="hero-meta">
+            <span class="meta-chip">2019 Q1 to 2025 Q4</span>
+            <span class="meta-chip">Interactive V1</span>
+          </div>
+        </nav>
+
+        <div class="hero-grid">
+          <div class="hero-copy card">
+            <p class="section-label">Overview</p>
+            <p class="lead">
+              A modern rebuild of the CEO Turnover Index focused on board-level clarity,
+              restrained design, and dynamic exploration across index and industry views.
+            </p>
+            <p class="supporting">
+              The experience prioritizes reliable quarterly metrics, gender and appointment
+              splits, and tenure signals. Views update instantly as users move between
+              global and segment-level perspectives.
+            </p>
+          </div>
+          <div class="hero-highlights card">
+            <p class="section-label">Coverage</p>
+            <div class="highlight-stack">
+              <div>
+                <span class="highlight-kicker">Reliable core</span>
+                <strong id="coverage-reliable">Global quarterly time series</strong>
+              </div>
+              <div>
+                <span class="highlight-kicker">Segment drilldown</span>
+                <strong id="coverage-segments">Filtered to segments with usable values</strong>
+              </div>
+              <div>
+                <span class="highlight-kicker">Latest observation</span>
+                <strong id="coverage-latest">Loading</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main class="content">
+        <section class="controls card">
+          <div class="control-group">
+            <span class="control-label">View</span>
+            <div class="segmented" id="scope-toggle">
+              <button class="active" data-scope="index">Index</button>
+              <button data-scope="industry">Industry</button>
+            </div>
+          </div>
+          <label class="control-group">
+            <span class="control-label">Segment</span>
+            <select id="segment-select"></select>
+          </label>
+          <label class="control-group">
+            <span class="control-label">Year</span>
+            <select id="year-select"></select>
+          </label>
+          <label class="control-group">
+            <span class="control-label">Quarter</span>
+            <select id="quarter-select">
+              <option value="All">All quarters</option>
+              <option value="1">Q1</option>
+              <option value="2">Q2</option>
+              <option value="3">Q3</option>
+              <option value="4">Q4</option>
+            </select>
+          </label>
+        </section>
+
+        <section class="kpi-grid" id="kpi-grid"></section>
+
+        <section class="panel-grid panel-grid-wide">
+          <article class="panel card">
+            <div class="panel-head">
+              <div>
+                <p class="section-label">Trend</p>
+                <h2>Incoming vs outgoing turnover rate</h2>
+              </div>
+              <p class="panel-note" id="trend-note"></p>
+            </div>
+            <div class="chart-wrap" id="trend-chart"></div>
+          </article>
+
+          <article class="panel card">
+            <div class="panel-head">
+              <div>
+                <p class="section-label">Tenure</p>
+                <h2>Outgoing CEO tenure trend</h2>
+              </div>
+              <p class="panel-note">Average years served before exit</p>
+            </div>
+            <div class="chart-wrap" id="tenure-chart"></div>
+          </article>
+        </section>
+
+        <section class="panel-grid">
+          <article class="panel card">
+            <div class="panel-head">
+              <div>
+                <p class="section-label">Comparison</p>
+                <h2 id="comparison-title">Segment leaderboard</h2>
+              </div>
+              <p class="panel-note">Latest available outgoing rate</p>
+            </div>
+            <div class="chart-wrap" id="comparison-chart"></div>
+          </article>
+
+          <article class="panel card">
+            <div class="panel-head">
+              <div>
+                <p class="section-label">Gender</p>
+                <h2>Incoming gender split</h2>
+              </div>
+              <p class="panel-note" id="gender-note"></p>
+            </div>
+            <div class="chart-wrap" id="gender-chart"></div>
+          </article>
+        </section>
+
+        <section class="panel-grid">
+          <article class="panel card">
+            <div class="panel-head">
+              <div>
+                <p class="section-label">Appointments</p>
+                <h2>Internal vs external incoming appointments</h2>
+              </div>
+              <p class="panel-note" id="appointment-note"></p>
+            </div>
+            <div class="chart-wrap" id="appointment-chart"></div>
+          </article>
+
+          <article class="panel card">
+            <div class="panel-head">
+              <div>
+                <p class="section-label">Method</p>
+                <h2>What this V1 includes</h2>
+              </div>
+            </div>
+            <div class="editorial-copy">
+              <p>
+                This version uses the extracted CSV package as the live data layer and
+                intentionally privileges accuracy over visual noise.
+              </p>
+              <ul class="feature-list">
+                <li>Quarterly turnover metrics for index and industry scopes</li>
+                <li>Gender and appointment splits where extracted values exist</li>
+                <li>Dynamic filtering by view, segment, year, and quarter</li>
+                <li>Coverage-aware segment lists to avoid exposing empty rows</li>
+              </ul>
+            </div>
+          </article>
+        </section>
+      </main>
+    </div>
+
+    <script src="./app.js" type="module"></script>
+  </body>
+</html>
