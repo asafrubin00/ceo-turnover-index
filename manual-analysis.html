@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manual Analysis | Global CEO Turnover Index</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body class="app-shell manual-page">
+    <div class="page">
+      <section class="hero-shell hero-manual">
+        <div class="hero-image"></div>
+
+        <div class="hero-top">
+          <div class="intro-panel">
+            <div class="brand-cluster">
+              <div class="logo-tile">
+                <img src="./Design/Logo inspiration.jpg" alt="" />
+              </div>
+              <div class="title-block">
+                <h1>Global CEO Turnover Index</h1>
+                <p class="intro-copy">
+                  Manual Analysis shows the full chart suite under one shared filter state.
+                </p>
+                <p class="source-line">
+                  Data sourced from
+                  <a href="https://www.russellreynolds.com/en/insights/reports-surveys/global-ceo-turnover-index" target="_blank" rel="noreferrer">Russell Reynolds Associates</a>
+                </p>
+                <div class="manual-links">
+                  <a href="./index.html">Back to dashboard</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="control-rail">
+        <div class="control-rail-inner">
+          <div class="filter-panel">
+            <div class="filter-grid">
+              <div class="filter-field">
+                <label for="scope-toggle">View</label>
+                <div class="toggle-shell" id="scope-toggle">
+                  <button class="active" data-scope="index">Index</button>
+                  <button data-scope="industry">Industry</button>
+                </div>
+              </div>
+
+              <div class="filter-field">
+                <label for="segment-select">Segment</label>
+                <div class="select-shell">
+                  <select id="segment-select"></select>
+                </div>
+              </div>
+
+              <div class="filter-field">
+                <label for="year-select">Year</label>
+                <div class="select-shell">
+                  <select id="year-select"></select>
+                </div>
+              </div>
+
+              <div class="filter-field">
+                <label for="quarter-select">Quarter</label>
+                <div class="select-shell">
+                  <select id="quarter-select">
+                    <option value="All">All quarters</option>
+                    <option value="1">Q1</option>
+                    <option value="2">Q2</option>
+                    <option value="3">Q3</option>
+                    <option value="4">Q4</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <p class="coverage-line" id="coverage-note">Loading coverage note</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="kpi-strip" id="kpi-strip"></section>
+
+      <main class="manual-grid">
+        <section class="chart-card chart-card-wide">
+          <div class="chart-shell-head">
+            <div>
+              <p class="panel-kicker">Flagship trend</p>
+              <h2>Quarterly turnover trajectory</h2>
+            </div>
+            <div class="chart-meta">
+              <span class="meta-pill" id="latest-quarter-pill">Loading latest quarter</span>
+            </div>
+          </div>
+          <div class="chart-stage chart-stage-large" id="flagship-chart"></div>
+        </section>
+
+        <section class="chart-card">
+          <div class="chart-shell-head">
+            <div>
+              <p class="panel-kicker">Regional reference</p>
+              <h2>World market view</h2>
+            </div>
+          </div>
+          <div class="chart-stage" id="regional-chart"></div>
+        </section>
+
+        <section class="chart-card">
+          <div class="chart-shell-head">
+            <div>
+              <p class="panel-kicker">Segment view</p>
+              <h2>Latest outgoing rate by segment</h2>
+            </div>
+          </div>
+          <div class="chart-stage" id="segment-chart"></div>
+        </section>
+
+        <section class="chart-card">
+          <div class="chart-shell-head">
+            <div>
+              <p class="panel-kicker">Tenure</p>
+              <h2>Outgoing CEO tenure</h2>
+            </div>
+          </div>
+          <div class="chart-stage" id="tenure-chart"></div>
+        </section>
+
+        <section class="chart-card">
+          <div class="chart-shell-head">
+            <div>
+              <p class="panel-kicker">Gender</p>
+              <h2>Incoming and outgoing composition</h2>
+            </div>
+          </div>
+          <div class="chart-stage" id="gender-chart"></div>
+        </section>
+
+        <section class="chart-card">
+          <div class="chart-shell-head">
+            <div>
+              <p class="panel-kicker">Internal versus external</p>
+              <h2>Appointment pathway</h2>
+            </div>
+          </div>
+          <div class="chart-stage" id="appointment-chart"></div>
+        </section>
+      </main>
+    </div>
+
+    <div class="tooltip" id="tooltip" hidden></div>
+    <script type="module" src="./manual-analysis.js"></script>
+  </body>
+</html>

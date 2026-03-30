@@ -4,8 +4,12 @@ Static interactive dashboard built directly in this folder using the extracted C
 
 ## Files
 - `index.html`: app shell and layout
-- `styles.css`: visual system and responsive styling
-- `app.js`: CSV loading, filtering, and chart rendering
+- `manual-analysis.html`: all-charts analyst page
+- `styles.css`: dark design system and responsive styling
+- `app.js`: main single-view dashboard entry
+- `manual-analysis.js`: manual analysis page entry
+- `shared/`: shared data, chart, and analysis modules
+- `api/analyze.js`: optional Vercel serverless route for OpenAI-backed analysis
 - `data/`: local CSV data layer used by the dashboard
 - `vercel.json`: static deployment configuration
 
@@ -28,3 +32,6 @@ http://localhost:4173
 - `data/industry_quarterly_metrics.csv`
 - `data/industry_quarterly_splits.csv`
 - `data/denominators_companies.csv`
+
+## Optional OpenAI mode
+If deployed on Vercel, add an `OPENAI_API_KEY` environment variable to enable the serverless analysis route in `api/analyze.js`. Without it, the dashboard uses the built-in local analysis fallback.
