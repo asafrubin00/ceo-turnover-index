@@ -4,24 +4,32 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Global CEO Turnover Index</title>
-    <link rel="stylesheet" href="./styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-geo@4/build/index.umd.min.js"></script>
+    <link rel="stylesheet" href="./styles.css?v=hero-mockup-6" />
   </head>
   <body class="app-shell home-page">
     <div class="page yahoo-shell">
-      <section class="brand-header">
-        <div class="brand-header-top">
-          <div class="brand-logo">
-            <img src="./Design/Logo inspiration.jpg" alt="" />
-          </div>
-          <h1 class="brand-title">Global CEO Turnover Index</h1>
+      <header class="brand-header">
+        <div class="brand-header-content">
+          <h1 class="brand-title">CEO Turnover Index</h1>
         </div>
-        <p class="brand-intro">
-          A redesigned executive intelligence product for exploring global CEO turnover, succession patterns, and tenure dynamics across indices and industries.
-        </p>
-        <p class="brand-source">
-          Data sourced from
-          <a href="https://www.russellreynolds.com/en/insights/reports-surveys/global-ceo-turnover-index" target="_blank" rel="noreferrer">Russell Reynolds Associates</a>
-        </p>
+        <button class="about-btn" id="about-btn" aria-label="About">
+          About
+        </button>
+      </header>
+
+      <section class="hero-bridge">
+        <p class="brand-intro">An executive intelligence product for exploring global CEO turnover, succession patterns, and tenure dynamics across indices and industries.</p>
+        <p class="brand-source">Data sourced from <a href="https://www.russellreynolds.com/en/insights/reports-surveys/global-ceo-turnover-index" target="_blank" rel="noopener noreferrer">Russell Reynolds Associates</a></p>
+        <div class="scroll-nudge">
+          <span></span>
+          <span></span>
+        </div>
       </section>
 
       <main class="home-middle">
@@ -69,7 +77,6 @@
             <button data-view="tenure">Tenure</button>
             <button data-view="gender">Gender</button>
             <button data-view="appointments">Internal v External</button>
-            <a class="nav-link-button" href="./manual-analysis.html">Manual Analysis</a>
           </div>
         </section>
 
@@ -85,39 +92,60 @@
           </div>
         </section>
 
+        <div class="pre-chart-strip">
+          <div class="selector-row" id="selector-row"></div>
+          <section class="kpi-strip" id="kpi-strip"></section>
+        </div>
+
         <section class="viz-row">
           <div class="chart-stage chart-stage-large" id="main-chart"></div>
 
           <aside class="terminal-right">
-            <div class="rail-search">
-              <span class="rail-search-label">Research</span>
-              <div class="rail-search-box">Search segment or quarter</div>
-            </div>
-
-            <div class="rail-panel">
-              <p class="rail-head">Trending Segments</p>
-              <div class="trending-list" id="trending-list"></div>
-            </div>
-
             <div class="rail-panel analysis-panel">
-              <p class="rail-head">ANALYSIS</p>
-              <p class="analysis-subhed">AI-assisted interpretation</p>
-              <div class="analysis-body" id="analysis-body">
-                <p>Loading analysis.</p>
+              <div class="rail-label">AI Analysis</div>
+              <div class="analysis-badge">
+                <span class="badge-dot"></span>
+                <span class="badge-text">Context-aware · Updates with chart</span>
+              </div>
+              <div class="analysis-body" id="analysis-output"></div>
+              <div class="analysis-disclaimer">
+                Analysis generated from Russell Reynolds data. For research purposes only.
               </div>
             </div>
           </aside>
         </section>
 
         <section class="support-strip">
-          <div class="selector-row" id="selector-row"></div>
-          <section class="kpi-strip" id="kpi-strip"></section>
           <p class="coverage-line" id="coverage-note">Loading coverage note</p>
         </section>
       </main>
     </div>
 
+    <!-- Intro Modal -->
+    <div id="intro-overlay" class="intro-overlay" role="dialog" aria-modal="true" aria-labelledby="intro-title">
+      <div class="intro-modal">
+        <div class="intro-modal-header">
+          <div>
+            <div class="intro-modal-eyebrow">Welcome</div>
+            <h2 class="intro-modal-title" id="intro-title">About the Index</h2>
+          </div>
+          <button class="intro-close-btn" id="intro-close-btn" aria-label="Dismiss and enter dashboard">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+        <div class="intro-modal-body">
+          <p>The decisions made by the CEOs of large public listed companies impact not only their businesses and their reputations, but can also have significant downstream effects, influencing entire global economies, industries and societies.</p>
+          <p>The rate at which CEOs 'turnover' (or, churn) provides unique insights on the stability of an industry, the appeal of a sector, or even the overall economic climate.</p>
+          <p>For instance, lower CEO turnover rates at a time of stable economic conditions suggests continuity in leadership benefits long-term corporate strategies. Higher turnover rates however, may hint at market uncertainty or changes, as demonstrated by the fluctuation of CEO departures during the COVID pandemic.</p>
+          <p>This evolving dashboard tracks these turnover rates over time, across countries (by way of major market indices) and industries. Its aim is to provide actionable insights into the often complex world of CEO tenure in large, global public companies and to aid in understanding of the broader trends that shape and are shaped by these key decision-makers at the helm of the world's largest organisations.</p>
+        </div>
+        <div class="intro-modal-footer">
+          <button class="intro-enter-btn" id="intro-enter-btn">Enter Dashboard →</button>
+        </div>
+      </div>
+    </div>
+
     <div class="tooltip" id="tooltip" hidden></div>
-    <script type="module" src="./app.js"></script>
+    <script type="module" src="./app.js?v=hero-mockup-6"></script>
   </body>
 </html>
