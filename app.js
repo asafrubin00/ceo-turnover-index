@@ -24,8 +24,10 @@ const els = {
   viewNav: document.getElementById("view-nav"),
   chartKicker: document.getElementById("chart-kicker"),
   chartTitle: document.getElementById("chart-title"),
+  summaryTitleInline: document.getElementById("summary-title-inline"),
   headlineValue: document.getElementById("headline-value"),
   headlineChange: document.getElementById("headline-change"),
+  headlineIndex: document.getElementById("headline-index"),
   latestQuarterPill: document.getElementById("latest-quarter-pill"),
   mainChart: document.getElementById("main-chart"),
   analysisOutput: document.getElementById("analysis-output"),
@@ -212,8 +214,11 @@ function renderSelectorRow() {
 function renderHeadline(context) {
   if (!context.latestPoint) {
     els.headlineValue.textContent = "--";
-    els.headlineChange.textContent = "No visible data";
+    els.headlineChange.textContent = "--";
+    els.headlineIndex.textContent = "--";
+    els.latestQuarterPill.textContent = "--";
     els.headlineChange.classList.remove("up", "down");
+    if (els.summaryTitleInline) els.summaryTitleInline.textContent = els.chartTitle?.textContent || "--";
     return;
   }
 
@@ -225,9 +230,14 @@ function renderHeadline(context) {
     selectedCount > 1
       ? `${selectedCount} segments`
       : displayLabel(state.selectedSegments?.[0] || state.segment);
+  const latestQuarterLabel =
+    context.latestPoint?.periodLabel?.replace(" Q", ", Q") || "--";
 
   els.headlineValue.textContent = formatPct(latest);
-  els.headlineChange.textContent = `${deltaLabel(latest, previous)} | ${scopeLabels[state.scope]} · ${segmentLabel}`;
+  els.headlineChange.textContent = deltaLabel(latest, previous);
+  els.headlineIndex.textContent = segmentLabel;
+  els.latestQuarterPill.textContent = latestQuarterLabel;
+  if (els.summaryTitleInline) els.summaryTitleInline.textContent = els.chartTitle?.textContent || "Quarterly turnover trajectory";
   els.headlineChange.classList.toggle("up", Number.isFinite(delta) && delta >= 0);
   els.headlineChange.classList.toggle("down", Number.isFinite(delta) && delta < 0);
 }
@@ -343,16 +353,17 @@ function renderFlagshipChart(context) {
       plugins: {
         legend: {
           display: true,
-          position: "bottom",
-          align: "start",
+          position: "top",
+          align: "end",
           labels: {
-            color: "rgba(232, 234, 240, 0.75)",
-            font: { family: "'IBM Plex Sans', sans-serif", size: 11 },
-            boxWidth: 12,
-            boxHeight: 2,
-            padding: 16,
+            color: "rgba(232, 234, 240, 0.92)",
+            font: { family: "'IBM Plex Sans', sans-serif", size: 13, weight: "500" },
+            boxWidth: 22,
+            boxHeight: 3,
+            padding: 12,
             usePointStyle: true,
             pointStyle: "line",
+            pointStyleWidth: 28,
           },
         },
         tooltip: {

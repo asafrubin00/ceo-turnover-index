@@ -10,7 +10,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-geo@4/build/index.umd.min.js"></script>
-    <link rel="stylesheet" href="./styles.css?v=hero-mockup-6" />
+    <link rel="stylesheet" href="./styles.css?v=hero-mockup-24" />
   </head>
   <body class="app-shell home-page">
     <div class="page yahoo-shell">
@@ -80,25 +80,47 @@
           </div>
         </section>
 
-        <section class="info-strip">
-          <div class="instrument-head">
-            <p class="small-label" id="chart-kicker">Flagship trend</p>
-            <h1 class="instrument-title" id="chart-title">Quarterly turnover trajectory</h1>
-          </div>
-          <div class="price-row">
-            <span class="price-value" id="headline-value">--</span>
-            <span class="price-change" id="headline-change">--</span>
-            <span class="meta-pill" id="latest-quarter-pill">Loading latest quarter</span>
-          </div>
-        </section>
+        <section class="content-shell">
+          <div class="content-main">
+            <section class="info-strip">
+              <div class="instrument-head">
+                <p class="small-label" id="chart-kicker">Flagship trend</p>
+                <h1 class="instrument-title" id="chart-title">Quarterly turnover trajectory</h1>
+              </div>
+              <div class="summary-strip">
+                <div class="summary-item summary-item-title" aria-hidden="true"></div>
+                <div class="summary-item">
+                  <span class="summary-label">Turnover rate</span>
+                  <span class="summary-value price-value" id="headline-value">--</span>
+                </div>
+                <div class="summary-item">
+                  <span class="summary-label">Change</span>
+                  <span class="summary-value price-change" id="headline-change">--</span>
+                </div>
+                <div class="summary-item">
+                  <span class="summary-label">Index</span>
+                  <span class="summary-value" id="headline-index">--</span>
+                </div>
+                <div class="summary-item">
+                  <span class="summary-label">Index latest quarter</span>
+                  <span class="summary-value" id="latest-quarter-pill">--</span>
+                </div>
+              </div>
+            </section>
 
-        <div class="pre-chart-strip">
-          <div class="selector-row" id="selector-row"></div>
-          <section class="kpi-strip" id="kpi-strip"></section>
-        </div>
+            <div class="pre-chart-strip">
+              <div class="selector-row" id="selector-row"></div>
+              <section class="kpi-strip" id="kpi-strip"></section>
+            </div>
 
-        <section class="viz-row">
-          <div class="chart-stage chart-stage-large" id="main-chart"></div>
+            <section class="viz-row">
+              <div class="chart-stage chart-stage-large" id="main-chart"></div>
+            </section>
+
+            <section class="support-strip">
+              <p class="coverage-line" id="coverage-note">Loading coverage note</p>
+            </section>
+          </div>
 
           <aside class="terminal-right">
             <div class="rail-panel analysis-panel">
@@ -108,15 +130,8 @@
                 <span class="badge-text">Context-aware · Updates with chart</span>
               </div>
               <div class="analysis-body" id="analysis-output"></div>
-              <div class="analysis-disclaimer">
-                Analysis generated from Russell Reynolds data. For research purposes only.
-              </div>
             </div>
           </aside>
-        </section>
-
-        <section class="support-strip">
-          <p class="coverage-line" id="coverage-note">Loading coverage note</p>
         </section>
       </main>
     </div>
@@ -146,6 +161,6 @@
     </div>
 
     <div class="tooltip" id="tooltip" hidden></div>
-    <script type="module" src="./app.js?v=hero-mockup-6"></script>
+    <script type="module" src="./app.js?v=hero-mockup-24"></script>
   </body>
 </html>

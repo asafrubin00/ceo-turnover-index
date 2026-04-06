@@ -257,15 +257,15 @@ h1.brand-title,
   position: sticky;
   top: 0;
   z-index: 14;
-  padding: 8px 14px;
+  padding: 10px 14px;
   border-bottom: 1px solid var(--divider);
   background: var(--bg);
 }
 
 .toolbar-row {
   display: grid;
-  grid-template-columns: minmax(170px, 1fr) minmax(260px, 1.45fr) minmax(170px, 1fr) minmax(170px, 1fr);
-  gap: 12px;
+  grid-template-columns: minmax(180px, 1fr) minmax(280px, 1.5fr) minmax(180px, 1fr) minmax(180px, 1fr);
+  gap: 16px;
   align-items: end;
 }
 
@@ -276,12 +276,12 @@ h1.brand-title,
 }
 
 .toolbar-cluster label {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--text-faint);
-  margin-bottom: 4px;
+  margin-bottom: 5px;
 }
 
 .toolbar-toggle {
@@ -295,9 +295,9 @@ h1.brand-title,
 .scope-btn,
 [class*="scope-toggle"],
 .toolbar-toggle button {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 400;
-  padding: 7px 12px;
+  padding: 9px 14px;
   color: var(--text-muted);
   background: none;
   border: none;
@@ -338,14 +338,14 @@ select,
 [class*="filter-select"] {
   width: 100%;
   font-family: "IBM Plex Sans", sans-serif;
-  font-size: 13px;
+  font-size: 14px;
   color: var(--text);
   background: var(--surface-offset);
   border: 1px solid var(--border);
   border-radius: 3px;
-  padding: 6px 10px;
+  padding: 7px 11px;
   padding-right: 22px;
-  height: 34px;
+  height: 38px;
   appearance: none;
   -webkit-appearance: none;
   cursor: pointer;
@@ -380,10 +380,10 @@ select:focus {
 .view-tabs-row .nav-link-button {
   flex: 1;
   text-align: center;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 400;
   color: var(--text-muted);
-  padding: 10px 0;
+  padding: 12px 0;
   border-radius: 0;
   background: none;
   border: none;
@@ -414,8 +414,10 @@ select:focus {
 
 /* Info strip — caption row above chart, not a section */
 .info-strip {
-  padding: 10px 14px 6px 14px;
+  padding: 14px 14px 10px 14px;
   background: var(--bg);
+  position: relative;
+  z-index: 3;
 }
 
 /* Kicker label — category label above chart title */
@@ -437,18 +439,99 @@ select:focus {
 [class*="instrument-title"],
 [class*="chart-title"] {
   margin: 0;
-  font-size: 18px;
+  font-size: 15px;
   font-weight: 500;
-  color: #ffffff;
+  color: var(--text-muted);
 }
 
-/* Price row — sits flush against top of chart */
-.price-row,
-[class*="price-row"] {
+/* Distributed summary strip */
+.summary-strip {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: 1.55fr 1fr 0.95fr 0.95fr 1fr;
+  border: none;
+  background: transparent;
+  border-radius: 0;
+}
+
+.summary-item {
+  min-height: 84px;
+  padding: 12px 14px 10px;
   display: flex;
-  align-items: baseline;
-  gap: 10px;
-  margin-bottom: 8px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.summary-item + .summary-item {
+  border-left: none;
+}
+
+.summary-item-title {
+  align-items: flex-start;
+  padding: 0;
+  min-height: 0;
+}
+
+.summary-label {
+  font-size: 11px;
+  line-height: 1.2;
+  color: var(--text-faint);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.summary-label-title {
+  font-size: 20px;
+  line-height: 1.18;
+  letter-spacing: -0.018em;
+  max-width: 280px;
+  color: var(--text);
+  text-transform: none;
+  letter-spacing: -0.01em;
+  font-weight: 500;
+}
+
+.summary-value {
+  font-size: 20px;
+  line-height: 1.04;
+  color: var(--text);
+  letter-spacing: -0.012em;
+  font-weight: 500;
+}
+
+.summary-item .price-value {
+  font-size: 20px;
+  line-height: 1.04;
+  letter-spacing: -0.012em;
+  font-weight: 500;
+}
+
+.summary-item .price-change {
+  font-size: 20px;
+  line-height: 1.04;
+  color: var(--positive);
+  letter-spacing: -0.012em;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.2em;
+}
+
+.summary-item .price-change.up,
+.summary-item .price-change.down,
+.summary-item .price-change-positive,
+.summary-item .price-change-negative {
+  font-size: 20px;
+  line-height: 1.04;
+}
+
+.summary-item:nth-child(4) .summary-value,
+.summary-item:nth-child(5) .summary-value {
+  font-size: 20px;
+  line-height: 1.04;
 }
 
 .price-change {
@@ -477,11 +560,22 @@ select:focus {
 [class*="price-value"],
 [class*="headline-value"] {
   font-family: "IBM Plex Mono", "Courier New", monospace;
-  font-size: 34px;
+  font-size: 52px;
   font-weight: 500;
   letter-spacing: -0.02em;
   color: var(--text);
-  line-height: 1;
+  line-height: 0.95;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  height: auto;
+  padding: 0;
+  border-radius: 0;
+  border: none;
+  background: none;
+  box-shadow: none;
+  flex-shrink: 0;
 }
 
 /* Context pills — quarter/date context */
@@ -495,23 +589,34 @@ select:focus {
   background: var(--surface-offset);
   color: var(--text-muted);
   border: 1px solid var(--border);
+  justify-self: end;
 }
 
-/* Viz row — give it all the remaining height */
+/* Unified content shell: left stack + right analysis rail */
+.content-shell {
+  display: grid;
+  grid-template-columns: 1fr 260px;
+  gap: 12px;
+  flex: 1 1 0;
+  min-height: 0;
+  padding: 0 14px;
+}
+
+.content-main {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* Viz row — chart area only (rail is now outside this row) */
 .viz-row,
 [class*="viz-row"] {
   flex: 1 1 0;
   min-height: 0;
-  display: grid;
-  grid-template-columns: 1fr 260px;
-  gap: 12px;
-  padding: 26px 14px 10px;
-  align-items: stretch;
-}
-
-.viz-row > * {
-  min-height: 0;
-  align-self: stretch;
+  display: block;
+  padding: 18px 0 0;
+  position: relative;
+  z-index: 1;
 }
 
 /* Main chart stage — keep border, remove any background gradient if one exists */
@@ -526,11 +631,13 @@ select:focus {
 }
 
 .chart-stage-large {
-  height: clamp(330px, 44vh, 500px);
+  height: clamp(380px, 50vh, 580px);
+  margin-top: 22px;
 }
 
 .chart-stage canvas,
 .chart-stage-large canvas {
+  height: 100% !important;
   max-height: 100%;
 }
 
@@ -548,8 +655,10 @@ select:focus {
   background: var(--surface);
   border-radius: 2px;
   align-self: stretch;
-  margin-top: -170px;
-  height: calc(100% + 170px);
+  margin-top: 0;
+  height: 100%;
+  position: relative;
+  z-index: 1;
 }
 
 /* Right rail panels — subtle internal separation */
@@ -571,30 +680,30 @@ select:focus {
 [class*="rail-label"],
 [class*="section-label"],
 .rail-head {
-  font-size: 10px;
+  font-size: 16px;
   font-weight: 600;
-  letter-spacing: 0.09em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--accent);
-  margin: 0 0 6px;
+  margin: 0 0 8px;
 }
 
 .analysis-panel,
 [class*="analysis-panel"] {
   flex: 1 1 0;
-  min-height: 640px;
+  min-height: 0;
   display: flex;
   flex-direction: column;
-  padding: 18px 18px 0 18px;
-  overflow: hidden;
-  gap: 12px;
+  padding: 16px 16px 0 16px;
+  overflow: visible;
+  gap: 8px;
 }
 
 .analysis-badge {
   display: flex;
   align-items: center;
   gap: 6px;
-  margin-bottom: 2px;
+  margin-bottom: 0;
 }
 
 .badge-dot {
@@ -613,15 +722,27 @@ select:focus {
 .analysis-body,
 [class*="analysis-body"],
 #analysis-output {
-  flex: 1 1 0;
-  min-height: 360px;
-  overflow-y: auto;
+  flex: 0 0 auto;
+  min-height: 0;
+  overflow: visible;
   font-size: 14px;
-  line-height: 1.74;
+  line-height: 1.56;
   color: var(--text-muted);
-  margin: 0;
-  white-space: pre-wrap;
+  margin: 16px 0 0 0;
+  white-space: normal;
   transition: opacity 200ms ease;
+}
+
+.analysis-body p {
+  margin: 0 0 1.1em;
+}
+
+.analysis-body p:first-child {
+  margin-top: 0;
+}
+
+.analysis-body p:last-child {
+  margin-bottom: 0;
 }
 
 .analysis-body.updating {
@@ -631,6 +752,8 @@ select:focus {
 .analysis-body strong {
   color: var(--text);
   font-weight: 500;
+  display: block;
+  margin-bottom: 1.1em;
 }
 
 .analysis-disclaimer,
@@ -638,14 +761,15 @@ select:focus {
   font-size: 10px;
   color: var(--text-faint);
   border-top: 1px solid var(--divider);
-  padding: 8px 0 12px 0;
+  padding: 10px 0 12px 0;
   line-height: 1.4;
   flex-shrink: 0;
+  margin-top: auto;
 }
 
 /* Support strip — muted footnotes below chart */
 .support-strip {
-  padding: 6px 14px;
+  padding: 6px 0;
   border-top: 1px solid var(--divider);
   background: var(--bg);
 }
@@ -657,12 +781,14 @@ select:focus {
   padding: 0 14px 2px;
   border-bottom: 1px solid var(--divider);
   background: var(--bg);
+  position: relative;
+  z-index: 3;
 }
 
 /* Selector row inside pre-chart-strip */
 .pre-chart-strip .selector-row,
 .pre-chart-strip [class*="selector-row"] {
-  padding: 8px 0 8px 0;
+  padding: 10px 0 10px 0;
   border-bottom: 1px solid var(--divider);
   border-right: none;
 }
@@ -670,10 +796,12 @@ select:focus {
 /* KPI strip inside pre-chart-strip */
 .pre-chart-strip .kpi-strip,
 .pre-chart-strip [class*="kpi-strip"] {
-  padding: 8px 0 9px 0;
-  flex-direction: row;
-  gap: 34px;
-  justify-content: space-between;
+  padding: 12px 0 10px 0;
+  margin-top: 6px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  column-gap: 28px;
+  align-items: start;
 }
 
 /* Selector row — flat pill strip, not large buttons */
@@ -681,8 +809,8 @@ select:focus {
 [class*="selector-row"] {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  padding: 8px 0;
+  gap: 8px;
+  padding: 10px 0;
 }
 
 .selector-pill,
@@ -690,9 +818,9 @@ select:focus {
 .index-pill,
 .industry-pill,
 .selector-item {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 400;
-  padding: 4px 11px;
+  padding: 5px 12px;
   border-radius: 2px;
   border: 1px solid var(--border);
   background: none;
@@ -721,10 +849,10 @@ select:focus {
 /* KPI strip — footnote level, not dashboard-card level */
 .kpi-strip,
 [class*="kpi-strip"] {
-  display: flex;
-  gap: 0;
-  padding: 8px 0;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 22px;
+  padding: 10px 0;
   width: 100%;
 }
 
@@ -732,12 +860,12 @@ select:focus {
 [class*="kpi-item"] {
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: 4px;
 }
 
 .kpi-label,
 [class*="kpi-label"] {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -746,7 +874,7 @@ select:focus {
 
 .kpi-value,
 [class*="kpi-value"] {
-  font-size: 19px;
+  font-size: 21px;
   font-weight: 500;
   font-family: "IBM Plex Mono", monospace;
   color: var(--text);
@@ -757,8 +885,10 @@ select:focus {
 .kpi-sub,
 [class*="kpi-sub"],
 .kpi-foot {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-muted);
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 /* Coverage line */
@@ -1262,8 +1392,9 @@ select:focus {
     flex-wrap: wrap;
   }
 
-  .viz-row {
+  .content-shell {
     grid-template-columns: 1fr;
+    gap: 10px;
   }
 
   .terminal-right {
@@ -1273,7 +1404,7 @@ select:focus {
   }
 
   .kpi-strip {
-    flex-wrap: wrap;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 14px;
   }
 
@@ -1310,8 +1441,8 @@ select:focus {
   .right-rail,
   [class*="terminal-right"],
   [class*="right-rail"] {
-    margin-top: -108px;
-    height: calc(100% + 108px);
+    margin-top: 0;
+    height: 100%;
   }
 
   .pre-chart-strip .kpi-strip,
@@ -1320,6 +1451,10 @@ select:focus {
   }
 
   .viz-row {
-    padding-top: 2px;
+    padding-top: 8px;
+  }
+
+  .chart-stage-large {
+    margin-top: 14px;
   }
 }
