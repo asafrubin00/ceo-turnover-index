@@ -92,6 +92,17 @@ function hasChartJs() {
   return typeof window.Chart === "function";
 }
 
+async function fetchWithTimeout(url, timeoutMs = 4500) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const response = await fetch(url, { signal: controller.signal, cache: "force-cache" });
+    return response;
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
 initialize();
 
 async function initialize() {
@@ -483,8 +494,9 @@ async function renderRegionalMapChart(context, cycle) {
 
 async function loadWorldCountries() {
   if (!worldCountriesPromise) {
-    worldCountriesPromise = fetch(
-      "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json"
+    worldCountriesPromise = fetchWithTimeout(
+      "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json",
+      4500
     )
       .then((response) => {
         if (!response.ok) throw new Error("world map fetch failed");
