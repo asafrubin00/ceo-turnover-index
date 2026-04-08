@@ -694,9 +694,9 @@ select:focus {
   min-height: 0;
   display: flex;
   flex-direction: column;
-  padding: 16px 16px 0 16px;
+  padding: 15px 15px 0 15px;
   overflow: visible;
-  gap: 8px;
+  gap: 6px;
 }
 
 .analysis-badge {
@@ -715,7 +715,7 @@ select:focus {
 }
 
 .badge-text {
-  font-size: 10px;
+  font-size: 11px;
   color: var(--text-faint);
 }
 
@@ -725,16 +725,16 @@ select:focus {
   flex: 0 0 auto;
   min-height: 0;
   overflow: visible;
-  font-size: 14px;
-  line-height: 1.56;
+  font-size: 15px;
+  line-height: 1.52;
   color: var(--text-muted);
-  margin: 16px 0 0 0;
+  margin: 10px 0 0 0;
   white-space: normal;
   transition: opacity 200ms ease;
 }
 
 .analysis-body p {
-  margin: 0 0 1.1em;
+  margin: 0 0 0.9em;
 }
 
 .analysis-body p:first-child {
@@ -753,7 +753,7 @@ select:focus {
   color: var(--text);
   font-weight: 500;
   display: block;
-  margin-bottom: 1.1em;
+  margin-bottom: 0.85em;
 }
 
 .analysis-disclaimer,
