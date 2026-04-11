@@ -1,37 +1,63 @@
-# Global CEO Turnover Index
+# CEO Turnover Index
 
-Static interactive dashboard built directly in this folder using the extracted CSV package from `CEO Turnover 2026/package`.
+**Global CEO turnover analytics. Interactive, filterable, AI-assisted.**
 
-## Files
-- `index.html`: app shell and layout
-- `manual-analysis.html`: all-charts analyst page
-- `styles.css`: dark design system and responsive styling
-- `app.js`: main single-view dashboard entry
-- `manual-analysis.js`: manual analysis page entry
-- `shared/`: shared data, chart, and analysis modules
-- `api/analyze.js`: optional Vercel serverless route for OpenAI-backed analysis
-- `data/`: local CSV data layer used by the dashboard
-- `vercel.json`: static deployment configuration
+📊 [View dashboard →](https://ceo-turnover-index.vercel.app)
 
-## Local preview
-Run a simple local server from this folder:
+The decisions made by the CEOs of large public companies ripple far beyond the boardroom - shaping industries, economies, and investor confidence. The rate at which CEOs turn over tells a story: about market stability, sector appeal, and the pressures bearing down on executive leadership at any given moment.
+
+This dashboard tracks those patterns.
+
+---
+
+## What It Does
+
+An interactive analytics platform for exploring global CEO turnover across major market indices and industries. Built on data from the **Russell Reynolds Associates Global CEO Turnover Index** - a project I concieved and built while working at Russell Reynolds, and which is one of the most comprehensive longitudinal datasets on executive succession available publicly.
+
+**Filter and explore by:**
+- Index (flagship, regional, segment)
+- Industry
+- Year and quarter
+- Tenure, gender, internal vs. external appointments
+
+**Features:**
+- Quarterly turnover trajectory charts
+- Trend analysis across indices and industries
+- AI-powered contextual analysis that updates with each chart view
+- Manual analysis page for deeper cross-cuts
+
+---
+
+## Background
+
+This is a rebuilt and expanded version of a [legacy project](https://github.com/AsafRubin00/CEO-Turnover-Index) I first built in 2023 during the LSE Data Analytics Career Accelerator. The original was a static Python/Jupyter analysis. This version is a fully interactive web dashboard with live filtering, dynamic charting, and an optional AI analysis layer.
+
+CEO turnover sits at the heart of corporate governance - it's where board accountability, succession planning, and shareholder pressure all converge. Building this dashboard was as much about understanding that landscape as it was about the engineering.
+
+---
+
+## Tech Stack
+
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
+![HTML](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
+![CSS](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
+
+Vanilla JS, HTML, CSS - deployed on Vercel. Optional OpenAI-backed analysis route via Vercel serverless function (requires `OPENAI_API_KEY` environment variable).
+
+---
+
+## Running Locally
 
 ```bash
+git clone https://github.com/asafrubin00/ceo-turnover-index.git
+cd ceo-turnover-index
 python3 -m http.server 4173
 ```
 
-Then open:
+Open [http://localhost:4173](http://localhost:4173)
 
-```text
-http://localhost:4173
-```
+---
 
-## Data used
-- `data/index_quarterly_metrics.csv`
-- `data/index_quarterly_splits.csv`
-- `data/industry_quarterly_metrics.csv`
-- `data/industry_quarterly_splits.csv`
-- `data/denominators_companies.csv`
+## Data
 
-## Optional OpenAI mode
-If deployed on Vercel, add an `OPENAI_API_KEY` environment variable to enable the serverless analysis route in `api/analyze.js`. Without it, the dashboard uses the built-in local analysis fallback.
+All underlying data is sourced from the **Russell Reynolds Associates Global CEO Turnover Index**. Full attribution at [russellreynolds.com](https://www.russellreynolds.com/en/insights/reports-surveys/global-ceo-turnover-index).
