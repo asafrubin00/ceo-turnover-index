@@ -105,6 +105,7 @@ let analysisTimer = null;
 let analysisCache = new Map();
 let worldCountriesPromise = null;
 let cleanupMapInteractions = null;
+let regionalLeafletMap = null;
 let renderCycle = 0;
 
 function hasChartJs() {
@@ -313,6 +314,10 @@ function destroyAllCharts() {
     cleanupMapInteractions();
     cleanupMapInteractions = null;
   }
+  if (regionalLeafletMap) {
+    regionalLeafletMap.remove();
+    regionalLeafletMap = null;
+  }
   if (charts.primary) {
     charts.primary.destroy();
     charts.primary = null;
@@ -425,6 +430,9 @@ function renderFlagshipChart(context) {
 }
 
 async function renderRegionalMapChart(context, cycle) {
+  const leafletRendered = renderRegionalLeafletMap(context);
+  if (leafletRendered) return true;
+
   try {
     if (!window.Chart) return false;
     const hasGeoBubbleController =
@@ -524,6 +532,83 @@ async function renderRegionalMapChart(context, cycle) {
     console.warn("Regional map fallback to scatter:", error);
     return renderRegionalScatterFallback(context);
   }
+}
+
+function renderRegionalLeafletMap(context) {
+  if (!window.L) return false;
+  const nodes = context.mapRows.length ? context.mapRows : context.comparisonRows;
+  const scoped = nodes.filter((row) => indexCoordinates[row.displaySegment]);
+  if (!scoped.length) return false;
+
+  const maxValue = Math.max(...scoped.map((row) => row.outgoingPct || 0), 1);
+  const minValue = Math.min(...scoped.map((row) => row.outgoingPct || 0), 0);
+  const duplicateTracker = {};
+  const jitter = [0, 0.18, -0.18, 0.32, -0.32];
+
+  els.mainChart.innerHTML = `<div id="regional-leaflet-map" class="regional-leaflet-map" aria-label="Regional turnover map"></div>`;
+  const mapEl = document.getElementById("regional-leaflet-map");
+  if (!mapEl) return false;
+
+  const map = window.L.map(mapEl, {
+    zoomControl: true,
+    scrollWheelZoom: true,
+    dragging: true,
+    worldCopyJump: true,
+  }).setView([24, 8], 2);
+
+  window.L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+    maxZoom: 8,
+    minZoom: 2,
+    attribution: "&copy; OpenStreetMap contributors &copy; CARTO",
+  }).addTo(map);
+
+  const layer = window.L.layerGroup().addTo(map);
+
+  scoped.forEach((row) => {
+    const coords = indexCoordinates[row.displaySegment];
+    const key = `${coords.lat.toFixed(2)}_${coords.lon.toFixed(2)}`;
+    const count = duplicateTracker[key] || 0;
+    duplicateTracker[key] = count + 1;
+
+    const lat = coords.lat + (count ? jitter[count % jitter.length] * 0.65 : 0);
+    const lon = coords.lon + (count ? jitter[count % jitter.length] : 0);
+    const outgoing = row.outgoingPct || 0;
+    const incoming = row.incomingPct || 0;
+    const radius = 6 + ((outgoing - minValue) / (maxValue - minValue || 1)) * 10;
+
+    const marker = window.L.circleMarker([lat, lon], {
+      radius,
+      color: "rgba(74, 158, 218, 1)",
+      weight: 1.5,
+      fillColor: "rgba(74, 158, 218, 0.7)",
+      fillOpacity: 0.82,
+    });
+
+    marker.bindTooltip(
+      `<strong>${row.displaySegment}</strong><br/>${row.periodLabel}<br/>Outgoing: ${outgoing.toFixed(
+        1
+      )}%<br/>Incoming: ${incoming.toFixed(1)}%`,
+      {
+        direction: "top",
+        offset: [0, -4],
+        className: "regional-map-tooltip",
+      }
+    );
+    marker.bindPopup(
+      `<div class="regional-map-popup"><strong>${row.displaySegment}</strong><div>${row.periodLabel}</div><div>Outgoing: ${outgoing.toFixed(
+        1
+      )}%</div><div>Incoming: ${incoming.toFixed(1)}%</div></div>`
+    );
+    marker.addTo(layer);
+  });
+
+  const bounds = layer.getBounds();
+  if (bounds.isValid()) {
+    map.fitBounds(bounds.pad(0.45), { animate: false });
+  }
+  regionalLeafletMap = map;
+  setTimeout(() => map.invalidateSize(), 0);
+  return true;
 }
 
 async function loadWorldCountries() {
