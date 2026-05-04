@@ -368,7 +368,16 @@ function renderFlagshipChart(context) {
       scales: {
         x: {
           grid: { color: "rgba(255,255,255,0.05)" },
-          ticks: { color: "rgba(232,234,240,0.55)", font: { size: 11 } },
+          ticks: {
+            color: "rgba(232,234,240,0.78)",
+            font: { size: 11 },
+            padding: 8,
+            autoSkip: true,
+            maxTicksLimit: 10,
+            maxRotation: 0,
+            minRotation: 0,
+            callback: (_, index) => context.visibleSeries[index]?.periodLabel ?? "",
+          },
         },
         y: {
           beginAtZero: true,
