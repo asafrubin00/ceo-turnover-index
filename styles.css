@@ -1501,22 +1501,25 @@ select:focus {
   .home-middle,
   [class*="home-middle"] {
     min-height: auto;
-    overflow: auto;
+    overflow: visible;
   }
 
   .content-shell {
     flex: none;
     min-height: auto;
+    display: block;
   }
 
   .content-main {
     min-height: auto;
+    overflow: visible;
   }
 
   .viz-row,
   [class*="viz-row"] {
     flex: none;
     min-height: auto;
+    overflow: visible;
   }
 
   .brand-header {
@@ -1676,11 +1679,16 @@ select:focus {
   .home-middle,
   [class*="home-middle"] {
     min-height: auto;
-    overflow: auto;
+    overflow: visible;
   }
 
   .content-shell {
     min-height: auto;
+    display: block;
+  }
+
+  .content-main {
+    overflow: visible;
   }
 
   .brand-header {
