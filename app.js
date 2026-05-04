@@ -556,7 +556,7 @@ function renderRegionalLeafletMap(context) {
     worldCopyJump: true,
   }).setView([24, 8], 2);
 
-  window.L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+  window.L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png", {
     maxZoom: 8,
     minZoom: 2,
     attribution: "&copy; OpenStreetMap contributors &copy; CARTO",
