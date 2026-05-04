@@ -167,3 +167,9 @@ year,quarter,segment,incoming_count,incoming_pct,outgoing_count,outgoing_pct,avg
 2025,4,Healthcare,3,2.7,5,4.5,10.7,113
 2025,4,Industrial,12,1.6,22,3.0,5.3,727
 2025,4,Technology,4,1.9,5,2.3,4.7,223
+2026,1,Global,77,4.2,55,3,10.0,1867
+2026,1,Consumer,21,6.6,13,4.1,7.2,316
+2026,1,Financial Services,16,3.5,11,2.4,11.9,473
+2026,1,Healthcare,5,4.5,7,6.4,10.6,112
+2026,1,Industrial,28,3.8,17,2.3,11.7,749
+2026,1,Technology,7,3.3,7,3.3,7.4,217

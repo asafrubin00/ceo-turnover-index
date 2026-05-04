@@ -2015,3 +2015,75 @@ year,quarter,segment,flow,split_type,split_value,count_value,pct_value
 2025,4,Technology,outgoing,appointment,External,,
 2025,4,Technology,outgoing,first_timer,Yes,,
 2025,4,Technology,outgoing,first_timer,No,,
+2026,1,Global,incoming,gender,Men,66,85.7
+2026,1,Global,incoming,gender,Women,11,14.3
+2026,1,Consumer,incoming,gender,Men,17,81
+2026,1,Consumer,incoming,gender,Women,4,19
+2026,1,Financial Services,incoming,gender,Men,16,100
+2026,1,Financial Services,incoming,gender,Women,0,0
+2026,1,Healthcare,incoming,gender,Men,4,80
+2026,1,Healthcare,incoming,gender,Women,1,20
+2026,1,Industrial,incoming,gender,Men,22,78.6
+2026,1,Industrial,incoming,gender,Women,6,21.4
+2026,1,Technology,incoming,gender,Men,7,100
+2026,1,Technology,incoming,gender,Women,0,0
+2026,1,Global,incoming,appointment,Internal,53,68.8
+2026,1,Global,incoming,appointment,External,24,31.2
+2026,1,Consumer,incoming,appointment,Internal,15,71.4
+2026,1,Consumer,incoming,appointment,External,6,28.6
+2026,1,Financial Services,incoming,appointment,Internal,13,81.2
+2026,1,Financial Services,incoming,appointment,External,3,18.8
+2026,1,Healthcare,incoming,appointment,Internal,2,40
+2026,1,Healthcare,incoming,appointment,External,3,60
+2026,1,Industrial,incoming,appointment,Internal,19,67.9
+2026,1,Industrial,incoming,appointment,External,9,32.1
+2026,1,Technology,incoming,appointment,Internal,4,57.1
+2026,1,Technology,incoming,appointment,External,3,42.9
+2026,1,Global,incoming,first_timer,Yes,57,74
+2026,1,Global,incoming,first_timer,No,20,26
+2026,1,Consumer,incoming,first_timer,Yes,15,71.4
+2026,1,Consumer,incoming,first_timer,No,6,28.6
+2026,1,Financial Services,incoming,first_timer,Yes,12,75
+2026,1,Financial Services,incoming,first_timer,No,4,25
+2026,1,Healthcare,incoming,first_timer,Yes,4,80
+2026,1,Healthcare,incoming,first_timer,No,1,20
+2026,1,Industrial,incoming,first_timer,Yes,21,75
+2026,1,Industrial,incoming,first_timer,No,7,25
+2026,1,Technology,incoming,first_timer,Yes,5,71.4
+2026,1,Technology,incoming,first_timer,No,2,28.6
+2026,1,Global,outgoing,gender,Men,53,96.4
+2026,1,Global,outgoing,gender,Women,2,3.6
+2026,1,Consumer,outgoing,gender,Men,12,92.3
+2026,1,Consumer,outgoing,gender,Women,1,7.7
+2026,1,Financial Services,outgoing,gender,Men,10,90.9
+2026,1,Financial Services,outgoing,gender,Women,1,9.1
+2026,1,Healthcare,outgoing,gender,Men,7,100
+2026,1,Healthcare,outgoing,gender,Women,0,0
+2026,1,Industrial,outgoing,gender,Men,17,100
+2026,1,Industrial,outgoing,gender,Women,0,0
+2026,1,Technology,outgoing,gender,Men,7,100
+2026,1,Technology,outgoing,gender,Women,0,0
+2026,1,Global,outgoing,appointment,Internal,39,70.9
+2026,1,Global,outgoing,appointment,External,16,29.1
+2026,1,Consumer,outgoing,appointment,Internal,9,69.2
+2026,1,Consumer,outgoing,appointment,External,4,30.8
+2026,1,Financial Services,outgoing,appointment,Internal,6,54.5
+2026,1,Financial Services,outgoing,appointment,External,5,45.5
+2026,1,Healthcare,outgoing,appointment,Internal,5,71.4
+2026,1,Healthcare,outgoing,appointment,External,2,28.6
+2026,1,Industrial,outgoing,appointment,Internal,13,76.5
+2026,1,Industrial,outgoing,appointment,External,4,23.5
+2026,1,Technology,outgoing,appointment,Internal,6,85.7
+2026,1,Technology,outgoing,appointment,External,1,14.3
+2026,1,Global,outgoing,first_timer,Yes,50,90.9
+2026,1,Global,outgoing,first_timer,No,5,9.1
+2026,1,Consumer,outgoing,first_timer,Yes,11,84.6
+2026,1,Consumer,outgoing,first_timer,No,2,15.4
+2026,1,Financial Services,outgoing,first_timer,Yes,9,81.8
+2026,1,Financial Services,outgoing,first_timer,No,2,18.2
+2026,1,Healthcare,outgoing,first_timer,Yes,7,100
+2026,1,Healthcare,outgoing,first_timer,No,0,0
+2026,1,Industrial,outgoing,first_timer,Yes,16,94.1
+2026,1,Industrial,outgoing,first_timer,No,1,5.9
+2026,1,Technology,outgoing,first_timer,Yes,7,100
+2026,1,Technology,outgoing,first_timer,No,0,0
