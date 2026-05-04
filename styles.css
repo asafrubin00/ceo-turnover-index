@@ -1498,6 +1498,27 @@ select:focus {
 }
 
 @media (max-width: 1024px) {
+  .home-middle,
+  [class*="home-middle"] {
+    min-height: auto;
+    overflow: auto;
+  }
+
+  .content-shell {
+    flex: none;
+    min-height: auto;
+  }
+
+  .content-main {
+    min-height: auto;
+  }
+
+  .viz-row,
+  [class*="viz-row"] {
+    flex: none;
+    min-height: auto;
+  }
+
   .brand-header {
     height: 54vh;
     min-height: 400px;
@@ -1652,6 +1673,16 @@ select:focus {
 }
 
 @media (max-width: 768px) {
+  .home-middle,
+  [class*="home-middle"] {
+    min-height: auto;
+    overflow: auto;
+  }
+
+  .content-shell {
+    min-height: auto;
+  }
+
   .brand-header {
     height: 48vh;
     min-height: 320px;
