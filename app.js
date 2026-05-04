@@ -364,11 +364,17 @@ function renderFlagshipChart(context) {
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      layout: {
+        padding: {
+          bottom: 26,
+        },
+      },
       interaction: { intersect: false, mode: "index" },
       scales: {
         x: {
           grid: { color: "rgba(255,255,255,0.05)" },
           ticks: {
+            display: true,
             color: "rgba(232,234,240,0.78)",
             font: { size: 11 },
             padding: 8,
