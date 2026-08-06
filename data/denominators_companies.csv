@@ -579,3 +579,23 @@ year,quarter,scope,segment,company_count
 2026,1,industry,Healthcare,112
 2026,1,industry,Industrial,749
 2026,1,industry,Technology,217
+2026,2,index,Global,1867
+2026,2,index,SP500,500
+2026,2,index,FTSE100,100
+2026,2,index,ASX200,201
+2026,2,index,CAC40,40
+2026,2,index,DAX40,40
+2026,2,index,EuroNext100,99
+2026,2,index,FTSE250,250
+2026,2,index,HANGSENG,93
+2026,2,index,Nikkei225,224
+2026,2,index,NSENifty50,50
+2026,2,index,SPTSX Composite,220
+2026,2,index,STI,30
+2026,2,index,SMI,20
+2026,2,industry,Global,1867
+2026,2,industry,Consumer,308
+2026,2,industry,Financial Services,472
+2026,2,industry,Healthcare,114
+2026,2,industry,Industrial,758
+2026,2,industry,Technology,215
