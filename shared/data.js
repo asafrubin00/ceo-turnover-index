@@ -1,9 +1,11 @@
+const DATA_VERSION = "2026-q2";
+
 export const DATA_FILES = {
-  indexMetrics: "./data/index_quarterly_metrics.csv",
-  indexSplits: "./data/index_quarterly_splits.csv",
-  industryMetrics: "./data/industry_quarterly_metrics.csv",
-  industrySplits: "./data/industry_quarterly_splits.csv",
-  denominators: "./data/denominators_companies.csv",
+  indexMetrics: `./data/index_quarterly_metrics.csv?v=${DATA_VERSION}`,
+  indexSplits: `./data/index_quarterly_splits.csv?v=${DATA_VERSION}`,
+  industryMetrics: `./data/industry_quarterly_metrics.csv?v=${DATA_VERSION}`,
+  industrySplits: `./data/industry_quarterly_splits.csv?v=${DATA_VERSION}`,
+  denominators: `./data/denominators_companies.csv?v=${DATA_VERSION}`,
 };
 
 export const quarterLabels = { 1: "Q1", 2: "Q2", 3: "Q3", 4: "Q4" };
