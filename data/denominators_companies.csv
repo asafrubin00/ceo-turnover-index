@@ -377,18 +377,18 @@ year,quarter,scope,segment,company_count
 2025,3,index,SPTSX Composite,213
 2025,3,index,STI,30
 2025,3,index,SMI,21
-2025,4,index,Global,1855
+2025,4,index,Global,1862
 2025,4,index,SP500,500
-2025,4,index,FTSE100,99
+2025,4,index,FTSE100,100
 2025,4,index,ASX200,201
-2025,4,index,CAC40,41
-2025,4,index,DAX40,39
+2025,4,index,CAC40,40
+2025,4,index,DAX40,40
 2025,4,index,EuroNext100,100
-2025,4,index,FTSE250,249
-2025,4,index,HANGSENG,88
-2025,4,index,Nikkei225,224
+2025,4,index,FTSE250,248
+2025,4,index,HANGSENG,89
+2025,4,index,Nikkei225,225
 2025,4,index,NSENifty50,50
-2025,4,index,SPTSX Composite,213
+2025,4,index,SPTSX Composite,218
 2025,4,index,STI,30
 2025,4,index,SMI,21
 2019,1,industry,Global,1855
@@ -553,12 +553,12 @@ year,quarter,scope,segment,company_count
 2025,3,industry,Healthcare,113
 2025,3,industry,Industrial,727
 2025,3,industry,Technology,223
-2025,4,industry,Global,1855
-2025,4,industry,Consumer,322
-2025,4,industry,Financial Services,470
-2025,4,industry,Healthcare,113
-2025,4,industry,Industrial,727
-2025,4,industry,Technology,223
+2025,4,industry,Global,1862
+2025,4,industry,Consumer,316
+2025,4,industry,Financial Services,472
+2025,4,industry,Healthcare,115
+2025,4,industry,Industrial,737
+2025,4,industry,Technology,222
 2026,1,index,Global,1867
 2026,1,index,SP500,500
 2026,1,index,FTSE100,100
@@ -599,3 +599,23 @@ year,quarter,scope,segment,company_count
 2026,2,industry,Healthcare,114
 2026,2,industry,Industrial,758
 2026,2,industry,Technology,215
+2026,3,index,Global,1867
+2026,3,index,SP500,500
+2026,3,index,FTSE100,100
+2026,3,index,ASX200,201
+2026,3,index,CAC40,40
+2026,3,index,DAX40,40
+2026,3,index,EuroNext100,100
+2026,3,index,FTSE250,250
+2026,3,index,HANGSENG,95
+2026,3,index,Nikkei225,224
+2026,3,index,NSENifty50,50
+2026,3,index,SPTSX Composite,217
+2026,3,index,STI,30
+2026,3,index,SMI,20
+2026,3,industry,Global,1867
+2026,3,industry,Consumer,309
+2026,3,industry,Financial Services,469
+2026,3,industry,Healthcare,114
+2026,3,industry,Industrial,755
+2026,3,industry,Technology,220

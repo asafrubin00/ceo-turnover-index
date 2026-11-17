@@ -1,4 +1,4 @@
-const DATA_VERSION = "2026-q2";
+const DATA_VERSION = "2026-q3";
 
 export const DATA_FILES = {
   indexMetrics: `./data/index_quarterly_metrics.csv?v=${DATA_VERSION}`,
