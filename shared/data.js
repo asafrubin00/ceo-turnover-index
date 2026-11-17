@@ -13,7 +13,7 @@ export const scopeLabels = { index: "Index", industry: "Industry" };
 export const viewMeta = {
   flagship: {
     kicker: "Flagship trend",
-    title: "Quarterly turnover trajectory",
+    title: "Quarterly turnover",
     caption:
       "Incoming and outgoing CEO turnover rates over time, filtered to the selected scope, segment, year, and quarter window.",
   },
@@ -71,11 +71,10 @@ export function createDefaultState() {
   return {
     scope: "index",
     segment: "Global",
-    selectedSegments: ["Global"],
+    benchmarks: [],
     year: "All",
     quarter: "All",
     view: "flagship",
-    hasInteracted: false,
   };
 }
 
@@ -251,210 +250,66 @@ function getAllSegmentsForScope(scope, denominators) {
 }
 
 export function buildViewContext(dataset, state) {
-  const scopeMetrics = dataset.metrics[state.scope];
-  const activeSegments = resolveActiveSegments(dataset, state);
-  const fullSeries = aggregateMetricSeries(scopeMetrics, activeSegments).filter(hasMetricData).sort(sortByTime);
-  const filteredSeries = applyTimeFilter(fullSeries, state);
-  const visibleSeries = filteredSeries.length ? filteredSeries : fullSeries;
+  const scopeMetrics = dataset.metrics[state.scope].filter(hasMetricData);
+  const fullSeries = scopeMetrics.filter((row) => row.segment === state.segment).sort(sortByTime);
+  const filteredMetrics = applyTimeFilter(scopeMetrics, state);
+  const visibleSeries = applyTimeFilter(fullSeries, state);
   const latestPoint = visibleSeries.at(-1) ?? null;
-  const previousPoint = visibleSeries.length > 1 ? visibleSeries.at(-2) : null;
-  const comparisonRows = getComparisonRows(dataset, state.scope, state);
-  const latestSplitPeriod = getLatestSplitPeriod(dataset, state.scope, activeSegments, state);
-  const genderRows = getCompositionRows(dataset, state.scope, activeSegments, "gender", latestSplitPeriod);
-  const appointmentRows = getCompositionRows(dataset, state.scope, activeSegments, "appointment", latestSplitPeriod);
-  const selectedCoverage = buildSelectedCoverage(dataset, state.scope, activeSegments);
-  const latestGlobal = scopeMetrics.filter((row) => row.segment === "Global" && hasMetricData(row)).sort(sortByTime).at(-1);
-  const mapRows = state.scope === "index" ? comparisonRows : getComparisonRows(dataset, "index", state);
+  const previousPoint = visibleSeries.at(-2) ?? null;
+  const priorQuarterKey = latestPoint && (
+    latestPoint.quarter === 1 ? (latestPoint.year - 1) * 10 + 4 : latestPoint.sortValue - 1
+  );
+  const priorQuarter = fullSeries.find((row) => row.sortValue === priorQuarterKey);
+  const yearEarlier = latestPoint && fullSeries.find((row) => row.sortValue === latestPoint.sortValue - 10);
+  const comparisonRows = getComparisonRows(filteredMetrics);
+  const splits = applyTimeFilter(dataset.splits[state.scope], state)
+    .filter((row) => row.segment === state.segment && hasSplitData(row));
+  const selectedCoverage = dataset.coverage[state.scope][state.segment];
+  const mapRows = state.scope === "index"
+    ? comparisonRows
+    : getComparisonRows(applyTimeFilter(dataset.metrics.index, state));
+  const benchmarkSeries = state.benchmarks.map((segment) => ({
+    segment,
+    rows: filteredMetrics.filter((row) => row.segment === segment).sort(sortByTime),
+  }));
 
   return {
     state,
-    fullSeries,
-    filteredSeries,
     visibleSeries,
     latestPoint,
     previousPoint,
+    priorQuarter,
+    yearEarlier,
+    benchmarkSeries,
     comparisonRows,
-    latestSplitPeriod,
-    genderRows,
-    appointmentRows,
+    genderTimeline: splits.filter((row) => row.splitType === "gender"),
+    genderRows: latestComposition(splits, "gender"),
+    appointmentRows: latestComposition(splits, "appointment"),
     selectedCoverage,
-    latestGlobal,
     mapRows,
   };
 }
 
-function resolveActiveSegments(dataset, state) {
-  const available = new Set(getSegmentOptions(dataset, state.scope));
-  const selected = (state.selectedSegments || [state.segment]).filter((segment) => available.has(segment));
-  if (selected.length) return selected;
-  if (available.has("Global")) return ["Global"];
-  const first = [...available][0];
-  return first ? [first] : [];
-}
-
-function aggregateMetricSeries(scopeMetrics, activeSegments) {
-  const rows = scopeMetrics.filter((row) => activeSegments.includes(row.segment)).filter(hasMetricData);
-  if (activeSegments.length <= 1) return rows;
-
-  const byPeriod = new Map();
-  rows.forEach((row) => {
-    const key = row.sortValue;
-    if (!byPeriod.has(key)) {
-      byPeriod.set(key, {
-        year: row.year,
-        quarter: row.quarter,
-        periodLabel: row.periodLabel,
-        sortValue: row.sortValue,
-        incomingCount: 0,
-        outgoingCount: 0,
-        companyCount: 0,
-        incomingPctValues: [],
-        outgoingPctValues: [],
-        tenureValues: [],
-        tenureWeights: [],
-      });
-    }
-    const bucket = byPeriod.get(key);
-    if (isValue(row.incomingCount)) bucket.incomingCount += row.incomingCount;
-    if (isValue(row.outgoingCount)) bucket.outgoingCount += row.outgoingCount;
-    if (isValue(row.companyCount)) bucket.companyCount += row.companyCount;
-    if (isValue(row.incomingPct)) bucket.incomingPctValues.push(row.incomingPct);
-    if (isValue(row.outgoingPct)) bucket.outgoingPctValues.push(row.outgoingPct);
-    if (isValue(row.avgOutgoingTenureYears)) {
-      bucket.tenureValues.push(row.avgOutgoingTenureYears);
-      bucket.tenureWeights.push(isValue(row.outgoingCount) ? row.outgoingCount : 1);
-    }
-  });
-
-  return [...byPeriod.values()].map((row) => {
-    const incomingPctFromCounts =
-      row.companyCount > 0 && isValue(row.incomingCount) ? (row.incomingCount / row.companyCount) * 100 : null;
-    const outgoingPctFromCounts =
-      row.companyCount > 0 && isValue(row.outgoingCount) ? (row.outgoingCount / row.companyCount) * 100 : null;
-    return {
-      year: row.year,
-      quarter: row.quarter,
-      periodLabel: row.periodLabel,
-      sortValue: row.sortValue,
-      segment: "MULTI",
-      displaySegment: "Selected segments",
-      incomingCount: row.incomingCount || null,
-      outgoingCount: row.outgoingCount || null,
-      companyCount: row.companyCount || null,
-      incomingPct: isValue(incomingPctFromCounts) ? incomingPctFromCounts : average(row.incomingPctValues),
-      outgoingPct: isValue(outgoingPctFromCounts) ? outgoingPctFromCounts : average(row.outgoingPctValues),
-      avgOutgoingTenureYears: weightedAverage(row.tenureValues, row.tenureWeights),
-    };
-  });
-}
-
-function weightedAverage(values, weights) {
-  if (!values.length || !weights.length || values.length !== weights.length) return null;
-  let numerator = 0;
-  let denominator = 0;
-  values.forEach((value, index) => {
-    const weight = isValue(weights[index]) ? weights[index] : 0;
-    numerator += value * weight;
-    denominator += weight;
-  });
-  return denominator > 0 ? numerator / denominator : average(values);
-}
-
-function buildSelectedCoverage(dataset, scope, segments) {
-  if (segments.length === 1) return dataset.coverage[scope][segments[0]];
-  const coverageRows = segments.map((segment) => dataset.coverage[scope][segment]).filter(Boolean);
-  if (!coverageRows.length) return null;
-  return {
-    displaySegment: `${segments.length} segments selected`,
-    quarterRows: Math.max(...coverageRows.map((row) => row.quarterRows)),
-    metricRows: Math.round(average(coverageRows.map((row) => row.metricRows))),
-    splitRows: Math.round(average(coverageRows.map((row) => row.splitRows))),
-  };
-}
-
-function getComparisonRows(dataset, scope, state) {
-  const rows = dataset.metrics[scope].filter((row) => row.segment !== "Global").filter((row) => isValue(row.outgoingPct));
-  const filtered = rows.filter((row) => {
-    const yearMatch = state.year === "All" || row.year === Number(state.year);
-    const quarterMatch = state.quarter === "All" || row.quarter === Number(state.quarter);
-    return yearMatch && quarterMatch;
-  });
-
-  const source = filtered.length ? filtered : rows;
+function getComparisonRows(rows) {
   const latestBySegment = new Map();
-  source.forEach((row) => {
+  rows.filter((row) => row.segment !== "Global" && isValue(row.outgoingPct)).forEach((row) => {
     const current = latestBySegment.get(row.segment);
     if (!current || row.sortValue > current.sortValue) latestBySegment.set(row.segment, row);
   });
-  return [...latestBySegment.values()].sort((a, b) => (b.outgoingPct || 0) - (a.outgoingPct || 0));
+  return [...latestBySegment.values()].sort((a, b) => b.outgoingPct - a.outgoingPct);
 }
 
-function getLatestSplitPeriod(dataset, scope, segments, state) {
-  const rows = dataset.splits[scope]
-    .filter((row) => segments.includes(row.segment))
-    .filter(hasSplitData)
-    .filter((row) => {
-      const yearMatch = state.year === "All" || row.year === Number(state.year);
-      const quarterMatch = state.quarter === "All" || row.quarter === Number(state.quarter);
-      return yearMatch && quarterMatch;
-    })
-    .sort(sortByTime);
-
-  if (rows.length) return rows.at(-1).periodLabel;
-
-  const fallback = dataset.splits[scope]
-    .filter((row) => segments.includes(row.segment))
-    .filter(hasSplitData)
-    .sort(sortByTime)
-    .at(-1);
-  return fallback ? fallback.periodLabel : null;
+function latestComposition(rows, splitType) {
+  const typeRows = rows.filter((row) => row.splitType === splitType);
+  const latest = typeRows.reduce((period, row) => Math.max(period, row.sortValue), 0);
+  return typeRows.filter((row) => row.sortValue === latest);
 }
 
-function getCompositionRows(dataset, scope, segments, splitType, periodLabel) {
-  if (!periodLabel) return [];
-  const rows = dataset.splits[scope]
-    .filter(
-      (row) =>
-        segments.includes(row.segment) && row.splitType === splitType && row.periodLabel === periodLabel
-    )
-    .filter(hasSplitData);
-
-  if (segments.length <= 1) return rows;
-
-  const grouped = new Map();
-  rows.forEach((row) => {
-    const key = `${row.flow}:${row.splitValue}`;
-    if (!grouped.has(key)) {
-      grouped.set(key, {
-        flow: row.flow,
-        splitValue: row.splitValue,
-        periodLabel: row.periodLabel,
-        countValue: 0,
-        pctValues: [],
-      });
-    }
-    const bucket = grouped.get(key);
-    if (isValue(row.countValue)) bucket.countValue += row.countValue;
-    if (isValue(row.pctValue)) bucket.pctValues.push(row.pctValue);
-  });
-
-  const flowTotals = new Map();
-  [...grouped.values()].forEach((row) => {
-    flowTotals.set(row.flow, (flowTotals.get(row.flow) || 0) + row.countValue);
-  });
-
-  return [...grouped.values()].map((row) => {
-    const flowTotal = flowTotals.get(row.flow) || 0;
-    const pctFromCounts = flowTotal > 0 ? (row.countValue / flowTotal) * 100 : null;
-    return {
-      flow: row.flow,
-      splitType,
-      splitValue: row.splitValue,
-      periodLabel: row.periodLabel,
-      countValue: row.countValue || null,
-      pctValue: isValue(pctFromCounts) ? pctFromCounts : average(row.pctValues),
-    };
-  });
+export function describePeriodFilter(state) {
+  if (state.year === "All") {
+    return state.quarter === "All" ? "the selected period" : `any reported ${quarterLabels[state.quarter]}`;
+  }
+  return state.quarter === "All" ? state.year : `${state.year} ${quarterLabels[state.quarter]}`;
 }
 
 function applyTimeFilter(rows, state) {
@@ -484,12 +339,6 @@ export function buildCoverageNote(coverage) {
   return `${coverage.displaySegment}: ${metricLabel}, ${splitLabel}.`;
 }
 
-export function describeFilterChip(state) {
-  const year = state.year === "All" ? "All years" : state.year;
-  const quarter = state.quarter === "All" ? "All quarters" : quarterLabels[Number(state.quarter)];
-  return `${year} | ${quarter}`;
-}
-
 export function describeVisibleRange(rows) {
   if (!rows.length) return "No visible range";
   if (rows.length === 1) return rows[0].periodLabel;
@@ -506,10 +355,7 @@ export function buildInsight(context) {
   const { latestPoint, previousPoint, state } = context;
   if (!latestPoint) return "No visible metric point for the current filter.";
   if (!previousPoint) return `Latest visible quarter: ${latestPoint.periodLabel}.`;
-  const delta = latestPoint.outgoingPct - previousPoint.outgoingPct;
-  return `${displayLabel(state.segment)} moved ${delta >= 0 ? "up" : "down"} ${Math.abs(delta).toFixed(
-    1
-  )} pts in outgoing rate versus the prior visible quarter.`;
+  return `${displayLabel(state.segment)} outgoing rate: ${deltaLabel(latestPoint.outgoingPct, previousPoint.outgoingPct)} from ${previousPoint.periodLabel} to ${latestPoint.periodLabel}.`;
 }
 
 export function displayLabel(segment) {

@@ -1,16 +1,16 @@
 import {
   buildViewContext,
   createDefaultState,
-  deltaLabel,
+  describePeriodFilter,
   displayLabel,
+  formatCount,
   formatPct,
   getSegmentOptions,
   getYearOptions,
   loadDashboardData,
-  scopeLabels,
   segmentOptionLabel,
 } from "./shared/data.js";
-import { initTooltip, renderHomeView, renderKpis, updateHomeMeta } from "./shared/charts.js";
+import { getTrendData, initTooltip, renderHomeView, renderKpis, updateHomeMeta } from "./shared/charts.js";
 
 const state = createDefaultState();
 const els = {
@@ -18,19 +18,17 @@ const els = {
   segmentSelect: document.getElementById("segment-select"),
   yearSelect: document.getElementById("year-select"),
   quarterSelect: document.getElementById("quarter-select"),
-  selectorRow: document.getElementById("selector-row"),
+  benchmarkSelect: document.getElementById("benchmark-select"),
+  benchmarkSummary: document.getElementById("benchmark-summary"),
+  benchmarkList: document.getElementById("benchmark-list"),
   coverageNote: document.getElementById("coverage-note"),
   kpiStrip: document.getElementById("kpi-strip"),
   viewNav: document.getElementById("view-nav"),
-  chartKicker: document.getElementById("chart-kicker"),
   chartTitle: document.getElementById("chart-title"),
-  summaryTitleInline: document.getElementById("summary-title-inline"),
-  headlineValue: document.getElementById("headline-value"),
-  headlineChange: document.getElementById("headline-change"),
-  headlineIndex: document.getElementById("headline-index"),
-  latestQuarterPill: document.getElementById("latest-quarter-pill"),
+  chartContext: document.getElementById("chart-context"),
+  quarterHeadline: document.getElementById("quarter-headline"),
   mainChart: document.getElementById("main-chart"),
-  analysisOutput: document.getElementById("analysis-output"),
+  changeOutput: document.getElementById("change-output"),
   tooltip: document.getElementById("tooltip"),
 };
 
@@ -55,54 +53,7 @@ const indexCoordinates = {
   STI: { lat: 1.3, lon: 103.8 },
 };
 
-const indexRegionMap = {
-  "S&P 500": "US",
-  "S&P/TSX Composite": "Canada",
-  "FTSE 100": "UK",
-  "FTSE 250": "UK",
-  "CAC 40": "France",
-  "DAX 40": "Germany",
-  "Euronext 100": "Euro Area",
-  SMI: "Switzerland",
-  "Nikkei 225": "Japan",
-  "Hang Seng": "Hong Kong",
-  "ASX 200": "Australia",
-  "NSE Nifty 50": "India",
-  STI: "Singapore",
-};
-
-const periodDriverMap = {
-  2020: ["pandemic-era disruption", "emergency cost restructuring", "board-level crisis succession planning"],
-  2021: ["reopening execution risk", "supply-chain normalization pressure", "portfolio and capital reallocation"],
-  2022: ["inflation and rate-shock pressure", "margin compression", "rapid repricing of growth expectations"],
-  2023: ["banking and funding volatility", "geopolitical fragmentation", "AI and digital strategy resets"],
-  2024: ["higher-for-longer rates", "election-cycle policy uncertainty", "renewed focus on cash generation"],
-  2025: ["late-cycle growth uncertainty", "board pressure for execution certainty", "faster performance accountability"],
-};
-
-const regionDriverMap = {
-  UK: ["weak-growth policy tradeoffs in the UK", "sterling and financing-condition swings", "board preference for turnaround leadership"],
-  US: ["activist scrutiny and capital-discipline demands", "faster performance accountability cycles", "strategic repositioning after valuation resets"],
-  "Euro Area": ["energy and demand uncertainty", "fragmented policy environment", "cross-border competitiveness pressure"],
-  Germany: ["industrial transition pressure", "export-demand cyclicality", "manufacturing margin risk"],
-  France: ["policy and labor cost uncertainty", "portfolio simplification pressure", "leadership refresh in large caps"],
-  Japan: ["governance reform momentum", "capital-efficiency focus", "board refresh tied to strategic modernization"],
-  "Hong Kong": ["China demand sensitivity", "capital market volatility", "leadership pivots toward resilience"],
-  India: ["high-growth execution pressure", "scale-up governance demands", "succession pipeline stress in expansion phases"],
-};
-
-const analysisCopy = {
-  flagship: ({ context, filterLabel }) => buildFlagshipInsight(context, filterLabel),
-  regional: ({ context, filterLabel }) => buildRegionalInsight(context, filterLabel),
-  segment: ({ context, filterLabel }) => buildSegmentInsight(context, filterLabel),
-  tenure: ({ context, filterLabel }) => buildTenureInsight(context, filterLabel),
-  gender: ({ context, filterLabel }) => buildGenderInsight(context, filterLabel),
-  appointments: ({ context, filterLabel }) => buildAppointmentsInsight(context, filterLabel),
-};
-
 let dataset;
-let analysisTimer = null;
-let analysisCache = new Map();
 let worldCountriesPromise = null;
 let cleanupMapInteractions = null;
 let regionalLeafletMap = null;
@@ -123,6 +74,9 @@ async function fetchWithTimeout(url, timeoutMs = 4500) {
   }
 }
 
+const aboutDialog = document.getElementById("about-dialog");
+document.getElementById("about-btn").addEventListener("click", () => aboutDialog.showModal());
+
 initialize();
 
 async function initialize() {
@@ -131,63 +85,66 @@ async function initialize() {
     initTooltip(els.tooltip);
     bindEvents();
     populateControls();
-    render();
+    await render();
   } catch (error) {
     console.error(error);
-    els.analysisOutput.innerHTML =
-      "<p>Data could not be loaded. Run the project from a local web server.</p>";
+    els.quarterHeadline.textContent = "CEO turnover data is unavailable.";
+    els.changeOutput.textContent = "Reload the page to try again.";
   }
 }
 
 function bindEvents() {
   els.scopeToggle.addEventListener("click", (event) => {
     const button = event.target.closest("button[data-scope]");
-    if (!button) return;
+    if (!button || button.dataset.scope === state.scope) return;
     state.scope = button.dataset.scope;
-    state.hasInteracted = true;
-    [...els.scopeToggle.querySelectorAll("button")].forEach((node) =>
-      node.classList.toggle("active", node === button)
-    );
+    state.benchmarks = [];
+    updatePressedButtons(els.scopeToggle, button);
     refreshSegmentOptions();
     render();
   });
 
   els.viewNav.addEventListener("click", (event) => {
     const button = event.target.closest("button[data-view]");
-    if (!button) return;
+    if (!button || button.dataset.view === state.view) return;
     state.view = button.dataset.view;
-    state.hasInteracted = true;
-    [...els.viewNav.querySelectorAll("button[data-view]")].forEach((node) =>
-      node.classList.toggle("active", node === button)
-    );
+    els.benchmarkSelect.open = false;
+    updatePressedButtons(els.viewNav, button);
     render();
   });
 
-  ["segmentSelect", "yearSelect", "quarterSelect"].forEach((key) => {
-    els[key].addEventListener("change", () => {
-      const stateKey = key.replace("Select", "");
-      state[stateKey] = els[key].value;
-      if (stateKey === "segment") state.selectedSegments = [els[key].value];
-      state.hasInteracted = true;
+  for (const key of ["segment", "year", "quarter"]) {
+    els[`${key}Select`].addEventListener("change", (event) => {
+      state[key] = event.target.value;
+      if (key === "segment") {
+        state.benchmarks = state.benchmarks.filter((segment) => segment !== state.segment);
+        refreshBenchmarkOptions();
+      }
       render();
     });
+  }
+
+  els.benchmarkList.addEventListener("change", () => {
+    state.benchmarks = Array.from(els.benchmarkList.querySelectorAll("input:checked"), (input) => input.value);
+    render();
   });
 
-  els.selectorRow.addEventListener("click", (event) => {
-    const item = event.target.closest("[data-segment]");
-    if (!item) return;
-    const { segment } = item.dataset;
-    const selected = new Set(
-      state.selectedSegments?.length ? state.selectedSegments : [state.segment]
-    );
-    if (selected.has(segment) && selected.size > 1) selected.delete(segment);
-    else selected.add(segment);
+  els.benchmarkSelect.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && els.benchmarkSelect.open) {
+      els.benchmarkSelect.open = false;
+      els.benchmarkSummary.focus();
+    }
+  });
 
-    state.selectedSegments = [...selected];
-    state.segment = state.selectedSegments[0];
-    els.segmentSelect.value = state.segment;
-    state.hasInteracted = true;
-    render();
+  document.addEventListener("click", (event) => {
+    if (!els.benchmarkSelect.contains(event.target)) els.benchmarkSelect.open = false;
+  });
+}
+
+function updatePressedButtons(group, activeButton) {
+  group.querySelectorAll("button").forEach((button) => {
+    button.classList.toggle("active", button === activeButton);
+    button.setAttribute("aria-pressed", String(button === activeButton));
   });
 }
 
@@ -201,76 +158,103 @@ function populateControls() {
 
 function refreshSegmentOptions() {
   const segments = getSegmentOptions(dataset, state.scope);
-  const validSelected = (state.selectedSegments || []).filter((segment) =>
-    segments.includes(segment)
-  );
-  if (!validSelected.length) validSelected.push(segments.includes("Global") ? "Global" : segments[0]);
-  state.selectedSegments = validSelected;
-  state.segment = state.selectedSegments[0];
-  els.segmentSelect.innerHTML = segments
-    .map(
-      (segment) =>
-        `<option value="${segment}">${segmentOptionLabel(dataset, state.scope, segment)}</option>`
-    )
-    .join("");
+  if (!segments.includes(state.segment)) state.segment = segments[0];
+  els.segmentSelect.replaceChildren(...segments.map((segment) =>
+    new Option(segmentOptionLabel(dataset, state.scope, segment), segment)
+  ));
   els.segmentSelect.value = state.segment;
+  refreshBenchmarkOptions();
 }
 
-async function render() {
+function refreshBenchmarkOptions() {
+  const options = getSegmentOptions(dataset, state.scope)
+    .filter((segment) => segment !== state.segment)
+    .map((segment) => {
+      const label = document.createElement("label");
+      const input = document.createElement("input");
+      input.type = "checkbox";
+      input.value = segment;
+      input.checked = state.benchmarks.includes(segment);
+      label.append(input, displayLabel(segment));
+      return label;
+    });
+  els.benchmarkList.replaceChildren(...options);
+}
+
+function render() {
   const cycle = ++renderCycle;
   const context = buildViewContext(dataset, state);
+  els.benchmarkSelect.hidden = state.view !== "flagship";
+  els.benchmarkSummary.textContent = state.benchmarks.length
+    ? `Compare benchmarks (${state.benchmarks.length})`
+    : "Compare benchmarks";
   renderKpis(els.kpiStrip, context);
   updateHomeMeta(context, els, state.view);
-  renderSelectorRow();
-  renderHeadline(context);
-  await renderMainView(context, cycle);
-  if (cycle !== renderCycle) return;
-  updateAnalysisPanel(state.view, context);
+  renderQuarterHeadline(context);
+  renderChanges(context);
+  return renderMainView(context, cycle);
 }
 
-function renderSelectorRow() {
-  const segments = getSegmentOptions(dataset, state.scope);
-  const selected = new Set(
-    state.selectedSegments?.length ? state.selectedSegments : [state.segment]
-  );
-  els.selectorRow.innerHTML = segments
-    .map((segment) => {
-      const active = selected.has(segment) ? "active" : "";
-      const label = segmentOptionLabel(dataset, state.scope, segment).split(" · ")[0];
-      return `<button class="selector-item ${active}" data-segment="${segment}" type="button">${label}</button>`;
-    })
-    .join("");
-}
-
-function renderHeadline(context) {
-  if (!context.latestPoint) {
-    els.headlineValue.textContent = "--";
-    els.headlineChange.textContent = "--";
-    els.headlineIndex.textContent = "--";
-    els.latestQuarterPill.textContent = "--";
-    els.headlineChange.classList.remove("up", "down");
-    if (els.summaryTitleInline) els.summaryTitleInline.textContent = els.chartTitle?.textContent || "--";
+function renderQuarterHeadline(context) {
+  const { latestPoint, yearEarlier, state } = context;
+  const segment = displayLabel(state.segment);
+  if (!latestPoint) {
+    els.quarterHeadline.textContent = `No data for ${segment} in ${describePeriodFilter(state)}.`;
     return;
   }
 
-  const latest = context.latestPoint.outgoingPct;
-  const previous = context.previousPoint?.outgoingPct;
-  const delta = Number.isFinite(latest) && Number.isFinite(previous) ? latest - previous : null;
-  const selectedCount = state.selectedSegments?.length || 1;
-  const segmentLabel =
-    selectedCount > 1
-      ? `${selectedCount} segments`
-      : displayLabel(state.selectedSegments?.[0] || state.segment);
-  const latestQuarterLabel =
-    context.latestPoint?.periodLabel?.replace(" Q", ", Q") || "--";
+  const period = `Q${latestPoint.quarter} ${latestPoint.year}`;
+  if (!Number.isFinite(latestPoint.outgoingPct)) {
+    els.quarterHeadline.textContent = `${segment} CEO departure rate is unavailable for ${period}.`;
+    return;
+  }
 
-  els.headlineValue.textContent = formatPct(latest);
-  els.headlineChange.textContent = deltaLabel(latest, previous);
-  els.headlineIndex.textContent = segmentLabel;
-  els.latestQuarterPill.textContent = latestQuarterLabel;
-  if (els.summaryTitleInline) els.summaryTitleInline.textContent = els.chartTitle?.textContent || "Quarterly turnover trajectory";
-  els.headlineChange.classList.toggle("up", Number.isFinite(delta) && delta >= 0);
-  els.headlineChange.classList.toggle("down", Number.isFinite(delta) && delta < 0);
+  const rate = formatPct(latestPoint.outgoingPct);
+  const previous = yearEarlier?.outgoingPct;
+  if (!Number.isFinite(previous)) {
+    els.quarterHeadline.textContent = `${segment} CEO departure rate was ${rate} in ${period}.`;
+    return;
+  }
+
+  const rateChange = latestPoint.outgoingPct - previous;
+  const verb = rateChange < 0 ? "fell to" : "rose to";
+  els.quarterHeadline.textContent = rateChange === 0
+    ? `${segment} CEO departure rate was unchanged at ${rate} in ${period} year over year.`
+    : `${segment} CEO departure rate ${verb} ${rate} in ${period}, from ${formatPct(previous)} a year earlier.`;
+}
+
+function renderChanges(context) {
+  const { latestPoint, priorQuarter, yearEarlier } = context;
+  if (!latestPoint) {
+    els.changeOutput.textContent = "No data for the selected period.";
+    return;
+  }
+
+  const earlierYear = latestPoint.year - 1;
+  const previousPeriod = latestPoint.quarter === 1
+    ? `${earlierYear} Q4`
+    : `${latestPoint.year} Q${latestPoint.quarter - 1}`;
+  const rows = [
+    ["Selected quarter", latestPoint.periodLabel, latestPoint],
+    ["Prior quarter", previousPeriod, priorQuarter],
+    ["Same quarter last year", `${earlierYear} Q${latestPoint.quarter}`, yearEarlier],
+  ];
+  els.changeOutput.innerHTML = `
+    <table class="change-table" aria-label="${latestPoint.displaySegment} turnover comparison">
+      <thead><tr><th scope="col">Period</th><th scope="col">Departures</th><th scope="col">Appointments</th></tr></thead>
+      <tbody>
+        ${rows.map(([label, period, row]) => `
+          <tr>
+            <th scope="row"><strong>${period}</strong><span>${label}</span></th>
+            ${row ? `
+              <td><strong>${formatPct(row.outgoingPct)}</strong><span>${formatCount(row.outgoingCount)} CEOs</span></td>
+              <td><strong>${formatPct(row.incomingPct)}</strong><span>${formatCount(row.incomingCount)} CEOs</span></td>
+            ` : '<td colspan="2">Data unavailable</td>'}
+          </tr>
+        `).join("")}
+      </tbody>
+    </table>
+  `;
 }
 
 async function renderMainView(context, cycle) {
@@ -284,7 +268,7 @@ async function renderMainView(context, cycle) {
 
   if (state.view === "regional") {
     const success = await renderRegionalMapChart(context, cycle);
-    if (!success) renderHomeView(els.mainChart, "regional", context);
+    if (!success && cycle === renderCycle) renderHomeView(els.mainChart, "regional", context);
     return;
   }
 
@@ -330,48 +314,34 @@ function destroyAllCharts() {
 
 function renderFlagshipChart(context) {
   if (!hasChartJs()) return false;
-  if (!context.visibleSeries.length) {
-    renderHomeView(els.mainChart, "flagship", context);
-    return true;
-  }
+  const { periods, lines } = getTrendData(context);
+  if (!periods.length) return false;
 
-  els.mainChart.innerHTML = '<canvas id="flagship-chart-canvas"></canvas>';
+  els.mainChart.innerHTML = '<canvas id="flagship-chart-canvas" role="img"></canvas>';
   const canvas = document.getElementById("flagship-chart-canvas");
+  canvas.setAttribute("aria-label", els.chartTitle.textContent);
   const chart = new window.Chart(canvas.getContext("2d"), {
     type: "line",
     data: {
-      labels: context.visibleSeries.map((row) => row.periodLabel),
-      datasets: [
-        {
-          label: "Outgoing",
-          data: context.visibleSeries.map((row) => row.outgoingPct),
-          borderColor: "rgba(212, 168, 67, 0.95)",
-          backgroundColor: "rgba(212, 168, 67, 0.08)",
-          pointRadius: 2.2,
-          pointHoverRadius: 4,
-          borderWidth: 1.7,
-          tension: 0.35,
-          fill: false,
-        },
-        {
-          label: "Incoming",
-          data: context.visibleSeries.map((row) => row.incomingPct),
-          borderColor: "rgba(74, 158, 218, 0.95)",
-          backgroundColor: "rgba(74, 158, 218, 0.08)",
-          pointRadius: 2.2,
-          pointHoverRadius: 4,
-          borderWidth: 1.7,
-          tension: 0.35,
-          fill: false,
-        },
-      ],
+      labels: periods.map((row) => row.periodLabel),
+      datasets: lines.map((line) => ({
+        label: line.label,
+        data: line.points.map((point) => point?.rate ?? null),
+        borderColor: line.color,
+        backgroundColor: line.color,
+        borderDash: line.dash,
+        pointRadius: 2.6,
+        pointHoverRadius: 4,
+        borderWidth: 2,
+      })),
     },
     options: {
       responsive: true,
+      animation: false,
       maintainAspectRatio: false,
       layout: {
         padding: {
-          bottom: 26,
+          bottom: 8,
         },
       },
       interaction: { intersect: false, mode: "index" },
@@ -384,10 +354,10 @@ function renderFlagshipChart(context) {
             font: { size: 11 },
             padding: 8,
             autoSkip: true,
-            maxTicksLimit: 10,
+            maxTicksLimit: window.matchMedia("(max-width: 560px)").matches ? 5 : 10,
             maxRotation: 0,
             minRotation: 0,
-            callback: (_, index) => context.visibleSeries[index]?.periodLabel ?? "",
+            callback: (value) => periods[value]?.periodLabel ?? "",
           },
         },
         y: {
@@ -404,7 +374,7 @@ function renderFlagshipChart(context) {
         legend: {
           display: true,
           position: "top",
-          align: "end",
+          align: "center",
           labels: {
             color: "rgba(232, 234, 240, 0.92)",
             font: { family: "'IBM Plex Sans', sans-serif", size: 13, weight: "500" },
@@ -418,7 +388,10 @@ function renderFlagshipChart(context) {
         },
         tooltip: {
           callbacks: {
-            label: (ctx) => `${ctx.dataset.label}: ${Number(ctx.parsed.y).toFixed(1)}%`,
+            label: (ctx) => {
+              const point = lines[ctx.datasetIndex].points[ctx.dataIndex];
+              return `${ctx.dataset.label}: ${formatPct(point.rate)} (${formatCount(point.count)} CEOs)`;
+            },
           },
         },
       },
@@ -430,6 +403,7 @@ function renderFlagshipChart(context) {
 }
 
 async function renderRegionalMapChart(context, cycle) {
+  if (!context.mapRows.length) return false;
   const leafletRendered = renderRegionalLeafletMap(context);
   if (leafletRendered) return true;
 
@@ -446,7 +420,7 @@ async function renderRegionalMapChart(context, cycle) {
     if (cycle !== renderCycle) return false;
     if (!countries?.features?.length) return renderRegionalScatterFallback(context);
 
-    const nodes = context.mapRows.length ? context.mapRows : context.comparisonRows;
+    const nodes = context.mapRows;
     const scoped = nodes.filter((row) => indexCoordinates[row.displaySegment]);
     if (!scoped.length) return false;
 
@@ -536,7 +510,7 @@ async function renderRegionalMapChart(context, cycle) {
 
 function renderRegionalLeafletMap(context) {
   if (!window.L) return false;
-  const nodes = context.mapRows.length ? context.mapRows : context.comparisonRows;
+  const nodes = context.mapRows;
   const scoped = nodes.filter((row) => indexCoordinates[row.displaySegment]);
   if (!scoped.length) return false;
 
@@ -562,7 +536,7 @@ function renderRegionalLeafletMap(context) {
     attribution: "&copy; OpenStreetMap contributors &copy; CARTO",
   }).addTo(map);
 
-  const layer = window.L.layerGroup().addTo(map);
+  const layer = window.L.featureGroup().addTo(map);
 
   scoped.forEach((row) => {
     const coords = indexCoordinates[row.displaySegment];
@@ -632,7 +606,7 @@ async function loadWorldCountries() {
 
 function renderRegionalScatterFallback(context) {
   if (!hasChartJs()) return false;
-  const nodes = context.mapRows.length ? context.mapRows : context.comparisonRows;
+  const nodes = context.mapRows;
   const scoped = nodes.filter((row) => indexCoordinates[row.displaySegment]);
   if (!scoped.length) return false;
 
@@ -1008,21 +982,7 @@ function renderGenderChart(context) {
 }
 
 function buildGenderTimelineRows(context) {
-  const active = new Set(
-    context.state.selectedSegments?.length
-      ? context.state.selectedSegments
-      : [context.state.segment]
-  );
-
-  const rows = dataset.splits[context.state.scope]
-    .filter((row) => row.splitType === "gender")
-    .filter((row) => active.has(row.segment))
-    .filter((row) => context.state.year === "All" || row.year === Number(context.state.year))
-    .filter(
-      (row) =>
-        context.state.quarter === "All" || row.quarter === Number(context.state.quarter)
-    );
-
+  const rows = context.genderTimeline;
   const byPeriod = new Map();
   rows.forEach((row) => {
     const key = row.sortValue;
@@ -1175,337 +1135,3 @@ function buildDonutChart(canvas, values) {
     },
   });
 }
-
-function round1(value) {
-  return Number.isFinite(value) ? Number(value).toFixed(1) : "n/a";
-}
-
-function stdDev(values) {
-  const clean = values.filter(Number.isFinite);
-  if (clean.length < 2) return 0;
-  const mean = average(clean);
-  const variance = clean.reduce((acc, value) => acc + (value - mean) ** 2, 0) / clean.length;
-  return Math.sqrt(variance);
-}
-
-function trendLabel(delta) {
-  if (!Number.isFinite(delta)) return "stable";
-  if (delta >= 0.6) return "clear acceleration";
-  if (delta >= 0.2) return "moderate acceleration";
-  if (delta <= -0.6) return "clear cooling";
-  if (delta <= -0.2) return "moderate cooling";
-  return "range-bound behavior";
-}
-
-function volatilityLabel(vol) {
-  if (!Number.isFinite(vol)) return "normal";
-  if (vol >= 1.2) return "high";
-  if (vol >= 0.8) return "elevated";
-  return "contained";
-}
-
-function getSeriesStats(context) {
-  const series = (context.visibleSeries || []).filter(
-    (row) => Number.isFinite(row.outgoingPct) && Number.isFinite(row.incomingPct)
-  );
-  if (!series.length) return null;
-  const outgoing = series.map((row) => row.outgoingPct);
-  const incoming = series.map((row) => row.incomingPct);
-  const latest = series.at(-1);
-  const first = series[0];
-  const peak = series.reduce((best, row) => (row.outgoingPct > best.outgoingPct ? row : best), series[0]);
-  const trough = series.reduce((best, row) => (row.outgoingPct < best.outgoingPct ? row : best), series[0]);
-  const latestSpread = latest.outgoingPct - latest.incomingPct;
-  const avgSpread = average(outgoing.map((v, i) => v - incoming[i]));
-  return {
-    series,
-    latest,
-    first,
-    peak,
-    trough,
-    avgOutgoing: average(outgoing),
-    avgIncoming: average(incoming),
-    trendDelta: latest.outgoingPct - first.outgoingPct,
-    latestSpread,
-    avgSpread,
-    outgoingVol: stdDev(outgoing),
-  };
-}
-
-function getSelectedSegmentLabel() {
-  const selectedCount = state.selectedSegments?.length || 1;
-  return selectedCount > 1
-    ? `${selectedCount} selected segments`
-    : displayLabel(state.selectedSegments?.[0] || state.segment);
-}
-
-function getLikelyDriverHints(context) {
-  const latestYear = context.latestPoint?.year;
-  const latestQuarter = context.latestPoint?.quarter;
-  const segment = displayLabel(state.selectedSegments?.[0] || state.segment);
-  const hints = [];
-  if (Number.isFinite(latestYear) && periodDriverMap[latestYear]) {
-    hints.push(...periodDriverMap[latestYear].slice(0, 2));
-  }
-  if (latestQuarter === 4) {
-    hints.push("year-end board succession decisions and compensation-cycle resets");
-  }
-  if (state.scope === "index") {
-    const region = indexRegionMap[segment];
-    if (region && regionDriverMap[region]) hints.push(...regionDriverMap[region].slice(0, 2));
-  } else {
-    if (/tech|software|digital|media/i.test(segment)) {
-      hints.push("AI-driven strategy pivots and product-cycle pressure");
-    } else if (/financial|bank|insurance/i.test(segment)) {
-      hints.push("rate-cycle effects and regulatory capital pressure");
-    } else if (/industrial|natural resources|energy|materials/i.test(segment)) {
-      hints.push("commodity-price cyclicality and energy-transition capex pressure");
-    } else if (/health|pharma|biotech/i.test(segment)) {
-      hints.push("pipeline execution risk and patent-cycle pressure");
-    } else {
-      hints.push("board pressure for execution certainty and margin discipline");
-    }
-  }
-  return [...new Set(hints)].slice(0, 3);
-}
-
-function formatDriverSentence(hints) {
-  if (!hints?.length) return "Likely contributors include cyclical macro pressure and board-level performance accountability.";
-  if (hints.length === 1) return `Likely contributors include ${hints[0]}.`;
-  if (hints.length === 2) return `Likely contributors include ${hints[0]} and ${hints[1]}.`;
-  return `Likely contributors include ${hints[0]}, ${hints[1]}, and ${hints[2]}.`;
-}
-
-function peerRankSummary(context) {
-  const rows = (context.comparisonRows || []).filter((row) => Number.isFinite(row.outgoingPct));
-  if (!rows.length) return "Peer ranking is unavailable for the current filter.";
-  const selected = state.selectedSegments?.length ? state.selectedSegments : [state.segment];
-  const chosen = rows.filter((row) => selected.includes(row.segment));
-  if (!chosen.length) return "Peer ranking is unavailable for the selected segment.";
-  const ranked = [...rows].sort((a, b) => b.outgoingPct - a.outgoingPct);
-  const target = chosen[0];
-  const rank = Math.max(1, ranked.findIndex((row) => row.segment === target.segment) + 1);
-  const total = ranked.length;
-  return `${displayLabel(target.segment)} ranks ${rank}/${total} on latest outgoing turnover (${round1(
-    target.outgoingPct
-  )}%).`;
-}
-
-function buildFlagshipInsight(context, filterLabel) {
-  const stats = getSeriesStats(context);
-  if (!stats) return `<p><strong>No valid series is visible for ${filterLabel}.</strong> Adjust segment, year, or quarter filters to generate interpretation.</p>`;
-  const latest = stats.latest;
-  const prev = context.previousPoint;
-  const qoq = deltaLabel(latest.outgoingPct, prev?.outgoingPct);
-  const driverSentence = formatDriverSentence(getLikelyDriverHints(context));
-  return `
-    <p><strong>Outgoing turnover is ${formatPct(latest.outgoingPct)} in ${latest.periodLabel}, with ${qoq} quarter-on-quarter and ${trendLabel(
-      stats.trendDelta
-    )} versus the start of the visible window.</strong> The visible peak is ${round1(
-      stats.peak.outgoingPct
-    )}% (${stats.peak.periodLabel}) and the trough is ${round1(stats.trough.outgoingPct)}% (${stats.trough.periodLabel}), indicating ${volatilityLabel(
-      stats.outgoingVol
-    )} turnover volatility.</p>
-    <p>Latest outgoing-incoming spread is ${round1(stats.latestSpread)} pts versus a visible-window average of ${round1(
-      stats.avgSpread
-    )} pts. ${driverSentence} This interpretation is generated from the selected lens (${filterLabel}) plus period/region heuristics.</p>
-  `;
-}
-
-function buildRegionalInsight(context, filterLabel) {
-  const ranked = (context.mapRows || [])
-    .filter((row) => Number.isFinite(row.outgoingPct))
-    .sort((a, b) => b.outgoingPct - a.outgoingPct);
-  if (!ranked.length) return `<p><strong>No regional rows are available for ${filterLabel}.</strong></p>`;
-  const top = ranked.slice(0, 3).map((row) => `${row.displaySegment} (${round1(row.outgoingPct)}%)`).join(", ");
-  const bottom = ranked.at(-1);
-  return `
-    <p><strong>Regional pressure is concentrated in ${top} under ${filterLabel}.</strong> The spread between the highest and lowest mapped rows is ${round1(
-      ranked[0].outgoingPct - bottom.outgoingPct
-    )} pts, which suggests materially different succession regimes across markets.</p>
-    <p>In practice, that dispersion usually aligns with differences in rate sensitivity, sector composition, and policy uncertainty by region rather than a single global driver.</p>
-  `;
-}
-
-function buildSegmentInsight(context, filterLabel) {
-  const ranked = (context.comparisonRows || [])
-    .filter((row) => Number.isFinite(row.outgoingPct))
-    .sort((a, b) => b.outgoingPct - a.outgoingPct);
-  if (!ranked.length) return `<p><strong>No segment comparison rows are available for ${filterLabel}.</strong></p>`;
-  const top = ranked[0];
-  const second = ranked[1];
-  const bottom = ranked.at(-1);
-  const gapTop = second ? top.outgoingPct - second.outgoingPct : 0;
-  return `
-    <p><strong>${displayLabel(top.segment)} currently leads outgoing turnover at ${round1(top.outgoingPct)}%.</strong> ${
-      second
-        ? `Its lead over the next segment is ${round1(gapTop)} pts, suggesting ${gapTop >= 0.6 ? "clear concentration" : "a relatively tight peer cluster"}.`
-        : "No second-ranked comparator is available in the current slice."
-    }</p>
-    <p>Top-to-bottom spread is ${round1(top.outgoingPct - bottom.outgoingPct)} pts. Persistent wide spreads typically indicate that succession pressure is being driven by sector-specific profitability, regulation, or strategic reset cycles.</p>
-  `;
-}
-
-function buildTenureInsight(context, filterLabel) {
-  const series = (context.visibleSeries || []).filter((row) => Number.isFinite(row.avgOutgoingTenureYears));
-  if (!series.length) return `<p><strong>No tenure history is available for ${filterLabel}.</strong></p>`;
-  const latest = series.at(-1);
-  const avgTenure = average(series.map((row) => row.avgOutgoingTenureYears));
-  const first = series[0];
-  const delta = latest.avgOutgoingTenureYears - first.avgOutgoingTenureYears;
-  return `
-    <p><strong>Latest outgoing tenure is ${round1(latest.avgOutgoingTenureYears)} years (${latest.periodLabel}), versus a visible-window average of ${round1(
-      avgTenure
-    )} years.</strong> Compared with the first visible period, tenure is ${delta >= 0 ? "up" : "down"} ${round1(Math.abs(delta))} years.</p>
-    <p>${delta < 0 ? "Falling tenure with stable/high turnover is usually consistent with faster board intervention and tighter performance accountability." : "Longer tenure with contained turnover usually signals strategic continuity and a lower urgency to refresh leadership."} Lens: ${filterLabel}.</p>
-  `;
-}
-
-function buildGenderInsight(context, filterLabel) {
-  const rows = buildGenderTimelineRows(context).filter(
-    (row) => Number.isFinite(row.incomingFemale) && Number.isFinite(row.outgoingFemale)
-  );
-  if (!rows.length) return `<p><strong>No gender composition history is available for ${filterLabel}.</strong></p>`;
-  const latest = rows.at(-1);
-  const first = rows[0];
-  const inDelta = latest.incomingFemale - first.incomingFemale;
-  const outDelta = latest.outgoingFemale - first.outgoingFemale;
-  return `
-    <p><strong>Latest female share is ${round1(latest.incomingFemale)}% on incoming and ${round1(latest.outgoingFemale)}% on outgoing flows.</strong> Versus the start of the visible window, incoming female share is ${inDelta >= 0 ? "up" : "down"} ${round1(
-      Math.abs(inDelta)
-    )} pts and outgoing is ${outDelta >= 0 ? "up" : "down"} ${round1(Math.abs(outDelta))} pts.</p>
-    <p>${inDelta > outDelta ? "Incoming representation improving faster than outgoing typically signals gradual pipeline deepening." : "When incoming does not outpace outgoing, progress is usually more cyclical than structural."} Lens: ${filterLabel}.</p>
-  `;
-}
-
-function buildAppointmentsInsight(context, filterLabel) {
-  const rows = context.appointmentRows || [];
-  if (!rows.length) return `<p><strong>No internal/external split is available for ${filterLabel}.</strong></p>`;
-  const incomingInternal = rows.find((r) => r.flow === "incoming" && r.splitValue === "Internal")?.pctValue ?? null;
-  const incomingExternal = rows.find((r) => r.flow === "incoming" && r.splitValue === "External")?.pctValue ?? null;
-  const outgoingInternal = rows.find((r) => r.flow === "outgoing" && r.splitValue === "Internal")?.pctValue ?? null;
-  const outgoingExternal = rows.find((r) => r.flow === "outgoing" && r.splitValue === "External")?.pctValue ?? null;
-  const incomingGap = Number.isFinite(incomingExternal) && Number.isFinite(incomingInternal) ? incomingExternal - incomingInternal : null;
-  const outgoingGap = Number.isFinite(outgoingExternal) && Number.isFinite(outgoingInternal) ? outgoingExternal - outgoingInternal : null;
-  return `
-    <p><strong>Incoming pathway mix is ${round1(incomingInternal)}% internal vs ${round1(
-      incomingExternal
-    )}% external; outgoing mix is ${round1(outgoingInternal)}% internal vs ${round1(outgoingExternal)}% external.</strong></p>
-    <p>${Number.isFinite(incomingGap) && incomingGap > 0 ? "External hires currently exceed internal promotions on incoming transitions, which often points to transformation mandates or capability gaps." : "Internal pathways are at least as strong as external hiring on incoming transitions, typically consistent with deeper succession bench strength."} ${Number.isFinite(outgoingGap) ? `Outgoing external-vs-internal gap is ${round1(
-      outgoingGap
-    )} pts.` : ""} Lens: ${filterLabel}.</p>
-  `;
-}
-
-function updateAnalysisPanel(viewKey, context) {
-  if (!els.analysisOutput) return;
-  if (analysisTimer) clearTimeout(analysisTimer);
-  const selectedCount = state.selectedSegments?.length || 1;
-  const segmentLabel =
-    selectedCount > 1
-      ? `${selectedCount} selected segments`
-      : displayLabel(state.selectedSegments?.[0] || state.segment);
-  const filterLabel = `${scopeLabels[state.scope]} · ${segmentLabel} · ${
-    state.year === "All" ? "All years" : state.year
-  } · ${state.quarter === "All" ? "All quarters" : `Q${state.quarter}`}`;
-
-  const builder = analysisCopy[viewKey] || analysisCopy.flagship;
-  const cacheKey = [
-    viewKey,
-    state.scope,
-    state.year,
-    state.quarter,
-    ...(state.selectedSegments || []),
-    context.latestPoint?.periodLabel || "",
-    round1(context.latestPoint?.outgoingPct),
-  ].join("|");
-  const html =
-    analysisCache.get(cacheKey) ||
-    (() => {
-      const output = builder({ context, filterLabel });
-      analysisCache.set(cacheKey, output);
-      return output;
-    })();
-  els.analysisOutput.classList.add("updating");
-  analysisTimer = window.setTimeout(() => {
-    els.analysisOutput.innerHTML = html;
-    els.analysisOutput.classList.remove("updating");
-  }, 180);
-}
-
-function average(values) {
-  const clean = values.filter((value) => Number.isFinite(value));
-  if (!clean.length) return 0;
-  return clean.reduce((sum, value) => sum + value, 0) / clean.length;
-}
-
-// ── INTRO MODAL ──
-(function () {
-  const overlay = document.getElementById("intro-overlay");
-  const closeBtn = document.getElementById("intro-close-btn");
-  const enterBtn = document.getElementById("intro-enter-btn");
-  const aboutBtn = document.getElementById("about-btn");
-
-  function dismissModal() {
-    if (!overlay) return;
-    overlay.classList.add("hidden");
-  }
-
-  function openModal() {
-    if (!overlay) return;
-    overlay.classList.remove("hidden");
-  }
-
-  if (closeBtn) closeBtn.addEventListener("click", dismissModal);
-  if (enterBtn) enterBtn.addEventListener("click", dismissModal);
-  if (aboutBtn) aboutBtn.addEventListener("click", openModal);
-
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") dismissModal();
-  });
-
-  if (overlay) {
-    overlay.addEventListener("click", (e) => {
-      if (e.target === overlay) dismissModal();
-    });
-  }
-})();
-
-// ── HERO BANNER SCROLL FADE ──
-(function () {
-  const header = document.querySelector(".brand-header");
-  const content = document.querySelector(".brand-header-content");
-  const bridge = document.querySelector(".hero-bridge");
-  if (!header || !content) return;
-
-  const shell = document.querySelector(".yahoo-shell") || document.documentElement;
-
-  function onScroll() {
-    const scrollY = shell.scrollTop || window.scrollY;
-    const bannerHeight = header.offsetHeight;
-    const bridgeHeight = bridge ? bridge.offsetHeight : 0;
-    const heroZone = bannerHeight + bridgeHeight;
-    const fadeEnd = bannerHeight * 0.55;
-    const opacity = Math.max(0, 1 - scrollY / fadeEnd);
-    content.style.opacity = opacity;
-    const heroOpacity = Math.max(0.82, 1 - scrollY / (heroZone * 1.3));
-    header.style.setProperty("--hero-opacity", heroOpacity.toFixed(3));
-    if (bridge) {
-      const bridgeOpacity = Math.max(0.4, 1 - scrollY / (heroZone * 1.15));
-      bridge.style.opacity = bridgeOpacity.toFixed(3);
-    }
-
-    const revealStart = heroZone * 0.1;
-    const revealRange = heroZone * 0.2;
-    const revealProgress = Math.min(1, Math.max(0, (scrollY - revealStart) / revealRange));
-    const blurPx = (1 - revealProgress) * 2.2;
-    const belowOpacity = 0.96 + revealProgress * 0.04;
-    shell.style.setProperty("--below-blur", `${blurPx.toFixed(2)}px`);
-    shell.style.setProperty("--below-opacity", belowOpacity.toFixed(3));
-  }
-
-  const scrollTarget = shell.scrollTop !== undefined ? shell : window;
-  scrollTarget.addEventListener("scroll", onScroll, { passive: true });
-  window.addEventListener("scroll", onScroll, { passive: true });
-  onScroll();
-})();

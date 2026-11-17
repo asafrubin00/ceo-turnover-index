@@ -1,6 +1,6 @@
 # CEO Turnover Index
 
-**Global CEO turnover analytics. Interactive, filterable, AI-assisted.**
+**Explore global CEO turnover by quarter, index, and industry.**
 
 📊 [View dashboard →](https://ceo-turnover-index.vercel.app)
 
@@ -22,15 +22,15 @@ An interactive analytics platform for exploring global CEO turnover across major
 
 **Features:**
 - Quarterly turnover trajectory charts
-- Trend analysis across indices and industries
-- AI-powered contextual analysis that updates with each chart view
+- Separate trend lines for selected departure-rate benchmarks
+- Quarterly and year-over-year comparisons with published rates and counts
 - Manual analysis page for deeper cross-cuts
 
 ---
 
 ## Background
 
-This is a rebuilt and expanded version of a [legacy project](https://github.com/AsafRubin00/CEO-Turnover-Index) I first built in 2023 during the LSE Data Analytics Career Accelerator. The original was a static Python/Jupyter analysis. This version is a fully interactive web dashboard with live filtering, dynamic charting, and an optional AI analysis layer.
+This is a rebuilt and expanded version of a [legacy project](https://github.com/AsafRubin00/CEO-Turnover-Index) I first built in 2023 during the LSE Data Analytics Career Accelerator. The original was a static Python/Jupyter analysis. This version is a fully interactive web dashboard with live filtering, dynamic charting, and reported quarter comparisons.
 
 CEO turnover sits at the heart of corporate governance - it's where board accountability, succession planning, and shareholder pressure all converge. Building this dashboard was as much about understanding that landscape as it was about the engineering.
 

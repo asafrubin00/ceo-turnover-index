@@ -1,6 +1,8 @@
 import {
   buildViewContext,
   createDefaultState,
+  describePeriodFilter,
+  displayLabel,
   getSegmentOptions,
   getYearOptions,
   loadDashboardData,
@@ -56,9 +58,6 @@ function bindEvents() {
     els[key].addEventListener("change", () => {
       const stateKey = key.replace("Select", "");
       state[stateKey] = els[key].value;
-      if (stateKey === "segment") {
-        state.selectedSegments = [els[key].value];
-      }
       render();
     });
   });
@@ -77,7 +76,6 @@ function refreshSegmentOptions() {
   if (!segments.includes(state.segment)) {
     state.segment = segments.includes("Global") ? "Global" : segments[0];
   }
-  state.selectedSegments = [state.segment];
   els.segmentSelect.innerHTML = segments
     .map((segment) => `<option value="${segment}">${segmentOptionLabel(dataset, state.scope, segment)}</option>`)
     .join("");
@@ -90,8 +88,7 @@ function render() {
   els.coverageNote.textContent = context.selectedCoverage
     ? `${context.selectedCoverage.displaySegment}: ${context.selectedCoverage.metricRows}/${context.selectedCoverage.quarterRows} populated metric quarters.`
     : "Coverage unavailable.";
-  els.latestQuarterPill.textContent = context.latestGlobal
-    ? `${context.latestGlobal.periodLabel}`
-    : "Latest quarter unavailable";
+  els.latestQuarterPill.textContent = context.latestPoint?.periodLabel
+    ?? `No data for ${displayLabel(state.segment)} in ${describePeriodFilter(state)}`;
   renderManualCharts(els.charts, context);
 }
