@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Global CEO Turnover Index</title>
-    <link rel="icon" type="image/png" href="./Design/ceoturnover-icon.png" />
+    <link rel="icon" type="image/svg+xml" href="./assets/logo-mark.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -17,34 +17,27 @@
       integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
       crossorigin=""
     />
-    <link rel="stylesheet" href="./styles.css?v=hero-mockup-27" />
+    <link rel="stylesheet" href="./styles.css?v=turnover-dashboard-2026-11" />
   </head>
   <body class="app-shell home-page">
     <div class="page yahoo-shell">
       <header class="brand-header">
         <div class="brand-header-content">
-          <h1 class="brand-title">CEO Turnover Index</h1>
+          <div class="brand-header-row">
+            <h1 class="brand-title">CEO Turnover Index</h1>
+            <button class="about-btn" id="about-btn" type="button" aria-haspopup="dialog">About</button>
+          </div>
+          <p class="quarter-headline" id="quarter-headline" aria-live="polite">Loading CEO turnover data…</p>
+          <p class="brand-source">Source <a href="https://www.russellreynolds.com/en/insights/reports-surveys/global-ceo-turnover-index" target="_blank" rel="noopener noreferrer">Russell Reynolds Associates</a></p>
         </div>
-        <button class="about-btn" id="about-btn" aria-label="About">
-          About
-        </button>
       </header>
-
-      <section class="hero-bridge">
-        <p class="brand-intro">An executive intelligence product for exploring global CEO turnover, succession patterns, and tenure dynamics across indices and industries.</p>
-        <p class="brand-source">Data sourced from <a href="https://www.russellreynolds.com/en/insights/reports-surveys/global-ceo-turnover-index" target="_blank" rel="noopener noreferrer">Russell Reynolds Associates</a></p>
-        <div class="scroll-nudge">
-          <span></span>
-          <span></span>
-        </div>
-      </section>
 
       <main class="home-middle">
         <section class="filter-strip">
           <div class="toolbar-row">
-            <div class="toolbar-cluster toolbar-toggle" id="scope-toggle">
-              <button class="active" data-scope="index">Index</button>
-              <button data-scope="industry">Industry</button>
+            <div class="toolbar-cluster toolbar-toggle" id="scope-toggle" role="group" aria-label="Benchmark type">
+              <button type="button" class="active" data-scope="index" aria-pressed="true">Index</button>
+              <button type="button" data-scope="industry" aria-pressed="false">Industry</button>
             </div>
 
             <div class="toolbar-cluster">
@@ -77,13 +70,13 @@
         </section>
 
         <section class="mode-strip">
-          <div class="view-tabs-row" id="view-nav">
-            <button class="active" data-view="flagship">Flagship</button>
-            <button data-view="regional">Regional</button>
-            <button data-view="segment">Segment</button>
-            <button data-view="tenure">Tenure</button>
-            <button data-view="gender">Gender</button>
-            <button data-view="appointments">Internal v External</button>
+          <div class="view-tabs-row" id="view-nav" role="group" aria-label="Chart view">
+            <button type="button" class="active" data-view="flagship" aria-pressed="true">Turnover trend</button>
+            <button type="button" data-view="regional" aria-pressed="false">Markets</button>
+            <button type="button" data-view="segment" aria-pressed="false">Rankings</button>
+            <button type="button" data-view="tenure" aria-pressed="false">Tenure</button>
+            <button type="button" data-view="gender" aria-pressed="false">Gender</button>
+            <button type="button" data-view="appointments" aria-pressed="false">Internal v External</button>
           </div>
         </section>
 
@@ -91,34 +84,19 @@
           <div class="content-main">
             <section class="info-strip">
               <div class="instrument-head">
-                <p class="small-label" id="chart-kicker">Flagship trend</p>
-                <h1 class="instrument-title" id="chart-title">Quarterly turnover trajectory</h1>
+                <h2 class="instrument-title" id="chart-title">Quarterly turnover</h2>
+                <p class="chart-context" id="chart-context"></p>
               </div>
-              <div class="summary-strip">
-                <div class="summary-item summary-item-title" aria-hidden="true"></div>
-                <div class="summary-item">
-                  <span class="summary-label">Turnover rate</span>
-                  <span class="summary-value price-value" id="headline-value">--</span>
-                </div>
-                <div class="summary-item">
-                  <span class="summary-label">Change</span>
-                  <span class="summary-value price-change" id="headline-change">--</span>
-                </div>
-                <div class="summary-item">
-                  <span class="summary-label">Index</span>
-                  <span class="summary-value" id="headline-index">--</span>
-                </div>
-                <div class="summary-item">
-                  <span class="summary-label">Index latest quarter</span>
-                  <span class="summary-value" id="latest-quarter-pill">--</span>
-                </div>
-              </div>
+              <details class="benchmark-select" id="benchmark-select" hidden>
+                <summary id="benchmark-summary">Compare benchmarks</summary>
+                <fieldset class="benchmark-options" id="benchmark-options">
+                  <legend class="visually-hidden">Additional benchmarks for the departure rate chart</legend>
+                  <div class="benchmark-list" id="benchmark-list"></div>
+                </fieldset>
+              </details>
             </section>
 
-            <div class="pre-chart-strip">
-              <div class="selector-row" id="selector-row"></div>
-              <section class="kpi-strip" id="kpi-strip"></section>
-            </div>
+            <section class="kpi-strip" id="kpi-strip" aria-label="Selected segment metrics"></section>
 
             <section class="viz-row">
               <div class="chart-stage chart-stage-large" id="main-chart"></div>
@@ -129,15 +107,9 @@
             </section>
           </div>
 
-          <aside class="terminal-right">
-            <div class="rail-panel analysis-panel">
-              <div class="rail-label">AI Analysis</div>
-              <div class="analysis-badge">
-                <span class="badge-dot"></span>
-                <span class="badge-text">Context-aware · Updates with chart</span>
-              </div>
-              <div class="analysis-body" id="analysis-output"></div>
-            </div>
+          <aside class="change-panel" aria-labelledby="change-title">
+            <h2 id="change-title">What changed</h2>
+            <div id="change-output" aria-live="polite"></div>
           </aside>
         </section>
       </main>
@@ -146,29 +118,14 @@
       </footer>
     </div>
 
-    <!-- Intro Modal -->
-    <div id="intro-overlay" class="intro-overlay" role="dialog" aria-modal="true" aria-labelledby="intro-title">
-      <div class="intro-modal">
-        <div class="intro-modal-header">
-          <div>
-            <div class="intro-modal-eyebrow">Welcome</div>
-            <h2 class="intro-modal-title" id="intro-title">About the Index</h2>
-          </div>
-          <button class="intro-close-btn" id="intro-close-btn" aria-label="Dismiss and enter dashboard">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-          </button>
-        </div>
-        <div class="intro-modal-body">
-          <p>The decisions made by the CEOs of large public listed companies impact not only their businesses and their reputations, but can also have significant downstream effects, influencing entire global economies, industries and societies.</p>
-          <p>The rate at which CEOs 'turnover' (or, churn) provides unique insights on the stability of an industry, the appeal of a sector, or even the overall economic climate.</p>
-          <p>For instance, lower CEO turnover rates at a time of stable economic conditions suggests continuity in leadership benefits long-term corporate strategies. Higher turnover rates however, may hint at market uncertainty or changes, as demonstrated by the fluctuation of CEO departures during the COVID pandemic.</p>
-          <p>This evolving dashboard tracks these turnover rates over time, across countries (by way of major market indices) and industries. Its aim is to provide actionable insights into the often complex world of CEO tenure in large, global public companies and to aid in understanding of the broader trends that shape and are shaped by these key decision-makers at the helm of the world's largest organisations.</p>
-        </div>
-        <div class="intro-modal-footer">
-          <button class="intro-enter-btn" id="intro-enter-btn">Enter Dashboard →</button>
-        </div>
-      </div>
-    </div>
+    <dialog id="about-dialog" class="about-dialog" aria-labelledby="about-title">
+      <h2 id="about-title">About the Index</h2>
+      <p>Explore CEO appointments, departures and tenure across major stock indices and industries. The dashboard uses the quarterly figures published by Russell Reynolds Associates.</p>
+      <p>Turnover rates use the source’s published percentages. The company count is reported separately in the appendix. Benchmarks can overlap, so the trend chart plots each benchmark individually.</p>
+      <form method="dialog">
+        <button type="submit">Close</button>
+      </form>
+    </dialog>
 
     <div class="tooltip" id="tooltip" hidden></div>
     <script
@@ -176,6 +133,6 @@
       integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
       crossorigin=""
     ></script>
-    <script type="module" src="./app.js?v=2026-q3"></script>
+    <script type="module" src="./app.js?v=turnover-dashboard-2026-11"></script>
   </body>
 </html>

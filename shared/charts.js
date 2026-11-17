@@ -1,16 +1,12 @@
 import {
-  average,
   buildCoverageNote,
   buildInsight,
-  deltaLabel,
-  describeFilterChip,
   describeVisibleRange,
   displayLabel,
   formatCount,
   formatPct,
   formatYears,
   isValue,
-  scopeLabels,
   viewMeta,
 } from "./data.js";
 
@@ -73,7 +69,7 @@ function hideTooltip() {
 }
 
 export function renderKpis(container, context) {
-  const { latestPoint, previousPoint, visibleSeries, state } = context;
+  const { latestPoint } = context;
   if (!latestPoint) {
     container.innerHTML = "";
     return;
@@ -84,25 +80,21 @@ export function renderKpis(container, context) {
       label: "Incoming appointments",
       value: formatCount(latestPoint.incomingCount),
       footLeft: `Rate ${formatPct(latestPoint.incomingPct)}`,
-      footRight: deltaLabel(latestPoint.incomingPct, previousPoint?.incomingPct),
     },
     {
       label: "Outgoing departures",
       value: formatCount(latestPoint.outgoingCount),
       footLeft: `Rate ${formatPct(latestPoint.outgoingPct)}`,
-      footRight: deltaLabel(latestPoint.outgoingPct, previousPoint?.outgoingPct),
     },
     {
       label: "Average outgoing tenure",
       value: formatYears(latestPoint.avgOutgoingTenureYears),
-      footLeft: `Mean ${formatYears(average(visibleSeries.map((row) => row.avgOutgoingTenureYears).filter(isValue)))}`,
-      footRight: latestPoint.periodLabel,
+      footLeft: latestPoint.periodLabel,
     },
     {
       label: "Companies in scope",
       value: formatCount(latestPoint.companyCount),
-      footLeft: `${scopeLabels[state.scope]} | ${displayLabel(state.segment)}`,
-      footRight: describeFilterChip(state),
+      footLeft: latestPoint.displaySegment,
     },
   ];
 
@@ -112,10 +104,7 @@ export function renderKpis(container, context) {
         <article class="kpi-item">
           <div class="kpi-label">${card.label}</div>
           <h3 class="kpi-value">${card.value}</h3>
-          <div class="kpi-foot">
-            <span>${card.footLeft}</span>
-            <span>${card.footRight}</span>
-          </div>
+          <div class="kpi-foot">${card.footLeft}</div>
         </article>
       `
     )
@@ -123,17 +112,18 @@ export function renderKpis(container, context) {
 }
 
 export function updateHomeMeta(context, els, view) {
-  const meta = viewMeta[view];
-  els.chartKicker.textContent = meta.kicker;
-  els.chartTitle.textContent = meta.title;
-  els.latestQuarterPill.textContent = context.latestGlobal
-    ? `${scopeLabels[context.state.scope]} latest quarter: ${context.latestGlobal.periodLabel}`
-    : "Latest quarter unavailable";
+  const comparing = view === "flagship" && context.benchmarkSeries.length > 0;
+  els.chartTitle.textContent = comparing ? "CEO departure rates by benchmark" : viewMeta[view].title;
+  els.chartContext.textContent = comparing
+    ? `Selected segment · ${displayLabel(context.state.segment)}`
+    : context.latestPoint
+      ? `${context.latestPoint.displaySegment} · ${context.latestPoint.periodLabel}`
+      : "";
   els.coverageNote.textContent = buildCoverageNote(context.selectedCoverage);
 }
 
 export function renderHomeView(container, view, context) {
-  if (view === "flagship") renderTrendChart(container, context.visibleSeries);
+  if (view === "flagship") renderTrendChart(container, context);
   if (view === "regional") renderRegionalChart(container, context);
   if (view === "segment") renderSegmentChart(container, context.comparisonRows, context.state.segment);
   if (view === "tenure") renderTenureChart(container, context.visibleSeries);
@@ -142,7 +132,7 @@ export function renderHomeView(container, view, context) {
 }
 
 export function renderManualCharts(registry, context) {
-  renderTrendChart(registry.flagship, context.visibleSeries);
+  renderTrendChart(registry.flagship, context);
   renderRegionalChart(registry.regional, context);
   renderSegmentChart(registry.segment, context.comparisonRows, context.state.segment);
   renderTenureChart(registry.tenure, context.visibleSeries);
@@ -174,57 +164,79 @@ export function buildAnalysisSummary(context, view) {
   };
 }
 
-function renderTrendChart(container, rows) {
-  if (!rows.length) return renderEmpty(container, "No turnover metrics match the current filter.");
+const benchmarkColors = ["#60aef2", "#65d6b6", "#ea8cbd", "#b49bf0", "#f68e77", "#9bbc66", "#65c6dc"];
 
-  const width = 920;
-  const height = 290;
-  const margin = { top: 12, right: 44, bottom: 34, left: 36 };
+export function getTrendData(context) {
+  const { state, visibleSeries, benchmarkSeries } = context;
+  const primary = { segment: state.segment, rows: visibleSeries };
+  const isComparison = benchmarkSeries.length > 0;
+  const series = [primary, ...benchmarkSeries];
+  const periodsByKey = new Map();
+  series.forEach(({ rows }) => rows.forEach((row) => periodsByKey.set(row.sortValue, row)));
+  const periods = [...periodsByKey.values()].sort((a, b) => a.sortValue - b.sortValue);
+  const definitions = isComparison
+    ? series.map(({ segment, rows }, index) => ({
+        label: displayLabel(segment),
+        rows,
+        flow: "outgoing",
+        color: index === 0 ? "#e0b451" : benchmarkColors[(index - 1) % benchmarkColors.length],
+        dash: index > benchmarkColors.length ? [3, 4] : [],
+      }))
+    : [
+        { label: "Departures", rows: visibleSeries, flow: "outgoing", color: "#e0b451", dash: [] },
+        { label: "Appointments", rows: visibleSeries, flow: "incoming", color: "#60aef2", dash: [] },
+      ];
+  const lines = definitions.map(({ label, rows, flow, color, dash }) => {
+    const rowsByPeriod = new Map(rows.map((row) => [row.sortValue, row]));
+    const points = periods.map(({ sortValue }) => {
+      const row = rowsByPeriod.get(sortValue);
+      const rate = row?.[`${flow}Pct`];
+      return isValue(rate) ? { rate, count: row[`${flow}Count`] } : null;
+    });
+    return { label, color, dash, points };
+  });
+  return { periods, lines };
+}
+
+function renderTrendChart(container, context) {
+  const { periods, lines } = getTrendData(context);
+  if (!periods.length) return renderEmpty(container, "No turnover data for the selected period.");
+
+  const width = 760;
+  const height = 292;
+  const margin = { top: 18, right: 34, bottom: 34, left: 52 };
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
-  const maxValue = Math.max(...rows.flatMap((row) => [row.incomingPct, row.outgoingPct].filter(isValue)), 1);
-  const xFor = (i) => margin.left + (rows.length === 1 ? innerWidth / 2 : (i / (rows.length - 1)) * innerWidth);
+  const maxValue = Math.max(...lines.flatMap((line) => line.points.map((point) => point?.rate ?? 0)), 1);
+  const xFor = (i) => margin.left + (periods.length === 1 ? innerWidth / 2 : (i / (periods.length - 1)) * innerWidth);
   const yFor = (value) => margin.top + innerHeight - (value / maxValue) * innerHeight;
-  const indices = sparseIndices(rows.length, 6);
 
   container.innerHTML = `
-    <svg viewBox="0 0 ${width} ${height}" class="chart-svg" aria-label="flagship trend">
-      <defs>
-        <linearGradient id="incoming-fill" x1="0%" x2="0%" y1="0%" y2="100%">
-          <stop offset="0%" stop-color="${palette.incoming}" stop-opacity="0.12" />
-          <stop offset="100%" stop-color="${palette.incoming}" stop-opacity="0" />
-        </linearGradient>
-        <linearGradient id="outgoing-fill" x1="0%" x2="0%" y1="0%" y2="100%">
-          <stop offset="0%" stop-color="${palette.outgoing}" stop-opacity="0.1" />
-          <stop offset="100%" stop-color="${palette.outgoing}" stop-opacity="0" />
-        </linearGradient>
-      </defs>
-      ${yGrid(maxValue, margin, width, yFor, true)}
-      ${indices.map((index) => `<text x="${xFor(index)}" y="${height - 9}" text-anchor="middle" class="tick-text">${rows[index].periodLabel}</text>`).join("")}
-      <path d="${buildAreaPath(rows, "incomingPct", xFor, yFor, margin.top + innerHeight)}" fill="url(#incoming-fill)" class="chart-area" />
-      <path d="${buildAreaPath(rows, "outgoingPct", xFor, yFor, margin.top + innerHeight)}" fill="url(#outgoing-fill)" class="chart-area" />
-      <path d="${buildSmoothLinePath(rows, "incomingPct", xFor, yFor)}" stroke="${palette.incoming}" class="chart-line" />
-      <path d="${buildSmoothLinePath(rows, "outgoingPct", xFor, yFor)}" stroke="${palette.outgoing}" class="chart-line" />
-      ${rows
-        .map((row, index) => {
-          const x = xFor(index);
-          return `
-            <rect x="${x - Math.max(innerWidth / Math.max(rows.length, 6) / 2, 12)}" y="${margin.top}" width="${Math.max(innerWidth / Math.max(rows.length, 6), 24)}" height="${innerHeight}" fill="transparent" data-tooltip="<strong>${row.periodLabel}</strong><span>Incoming rate ${formatPct(row.incomingPct)}<br />Outgoing rate ${formatPct(row.outgoingPct)}<br />Incoming count ${formatCount(row.incomingCount)}<br />Outgoing count ${formatCount(row.outgoingCount)}</span>" />
-            ${isValue(row.incomingPct) ? `<circle cx="${x}" cy="${yFor(row.incomingPct)}" r="2.6" fill="${palette.incoming}" />` : ""}
-            ${isValue(row.outgoingPct) ? `<circle cx="${x}" cy="${yFor(row.outgoingPct)}" r="2.6" fill="${palette.outgoing}" />` : ""}
-          `;
-        })
-        .join("")}
-      <text x="${margin.left}" y="9" class="axis-text">Percent of companies</text>
-      ${endpointLabel(rows, "incomingPct", "Incoming", palette.incoming, xFor, yFor)}
-      ${endpointLabel(rows, "outgoingPct", "Outgoing", palette.outgoing, xFor, yFor)}
-    </svg>
+    <div class="trend-fallback">
+      <ul class="trend-legend">
+        ${lines.map(({ label, color, dash }) => `<li><span style="--line-color:${color}; --line-style:${dash.length ? "dashed" : "solid"}"></span>${label}</li>`).join("")}
+      </ul>
+      <svg viewBox="0 0 ${width} ${height}" class="chart-svg" role="img" aria-label="Quarterly turnover trend">
+        ${yGrid(maxValue, margin, width, yFor, true)}
+        ${sparseIndices(periods.length, 5).map((index) => `<text x="${xFor(index)}" y="${height - 9}" text-anchor="middle" class="tick-text">${periods[index].periodLabel}</text>`).join("")}
+        ${lines.map(({ label, color, dash, points }) => {
+          const path = points.map((point, index) => point
+            ? `${points[index - 1] ? "L" : "M"} ${xFor(index)} ${yFor(point.rate)}`
+            : "").join(" ");
+          const markers = points.map((point, index) => point ? `
+            <circle cx="${xFor(index)}" cy="${yFor(point.rate)}" r="3" fill="${color}"
+              data-tooltip="<strong>${label} · ${periods[index].periodLabel}</strong><span>${formatPct(point.rate)} · ${formatCount(point.count)} CEOs</span>" />
+          ` : "").join("");
+          return `<path d="${path}" stroke="${color}" stroke-dasharray="${dash.join(" ")}" class="chart-line" />${markers}`;
+        }).join("")}
+      </svg>
+    </div>
   `;
   applyTooltipWiring(container);
 }
 
 function renderRegionalChart(container, context) {
-  const nodes = context.mapRows.length ? context.mapRows : context.comparisonRows;
+  const nodes = context.mapRows;
   if (!nodes.length) return renderEmpty(container, "No regional benchmark values are available.");
   const width = 860;
   const height = 278;
@@ -392,60 +404,6 @@ function renderCompositionChart(container, rows, type) {
 
 function renderEmpty(container, message) {
   container.innerHTML = `<div class="empty-panel"><p>${message}</p></div>`;
-}
-
-function buildLinePath(rows, key, xFor, yFor) {
-  const points = rows
-    .map((row, index) => (isValue(row[key]) ? `${index === firstDefinedIndex(rows, key) ? "M" : "L"} ${xFor(index)} ${yFor(row[key])}` : ""))
-    .filter(Boolean);
-  return points.join(" ");
-}
-
-function buildSmoothLinePath(rows, key, xFor, yFor) {
-  const points = rows
-    .map((row, index) =>
-      isValue(row[key]) ? { x: xFor(index), y: yFor(row[key]) } : null
-    )
-    .filter(Boolean);
-
-  if (!points.length) return "";
-  if (points.length === 1) return `M ${points[0].x} ${points[0].y}`;
-
-  let path = `M ${points[0].x} ${points[0].y}`;
-  for (let i = 0; i < points.length - 1; i += 1) {
-    const p0 = points[i - 1] || points[i];
-    const p1 = points[i];
-    const p2 = points[i + 1];
-    const p3 = points[i + 2] || p2;
-    const cp1x = p1.x + (p2.x - p0.x) / 6;
-    const cp1y = p1.y + (p2.y - p0.y) / 6;
-    const cp2x = p2.x - (p3.x - p1.x) / 6;
-    const cp2y = p2.y - (p3.y - p1.y) / 6;
-    path += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p2.x} ${p2.y}`;
-  }
-  return path;
-}
-
-function buildAreaPath(rows, key, xFor, yFor, baseline) {
-  const defined = rows.map((row, index) => ({ row, index })).filter(({ row }) => isValue(row[key]));
-  if (!defined.length) return "";
-  const line = defined
-    .map(({ row, index }, idx) => `${idx === 0 ? "M" : "L"} ${xFor(index)} ${yFor(row[key])}`)
-    .join(" ");
-  const first = defined[0];
-  const last = defined.at(-1);
-  return `${line} L ${xFor(last.index)} ${baseline} L ${xFor(first.index)} ${baseline} Z`;
-}
-
-function firstDefinedIndex(rows, key) {
-  return rows.findIndex((row) => isValue(row[key]));
-}
-
-function endpointLabel(rows, key, label, color, xFor, yFor) {
-  const defined = [...rows].reverse().find((row) => isValue(row[key]));
-  if (!defined) return "";
-  const index = rows.lastIndexOf(defined);
-  return `<text x="${xFor(index) + 10}" y="${yFor(defined[key]) - 8}" fill="${color}" class="legend-text">${label} ${formatPct(defined[key])}</text>`;
 }
 
 function yGrid(maxValue, margin, width, yFor, usePct) {
