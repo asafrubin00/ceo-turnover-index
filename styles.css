@@ -1314,3 +1314,89 @@ select:focus {
     margin-block: 8px;
   }
 }
+
+/* Landing and research workspace */
+html { scroll-behavior: smooth; }
+.brand-header {
+  min-height: 100svh;
+  display: flex;
+  align-items: stretch;
+  background:
+    linear-gradient(180deg, rgba(4,8,18,.22), rgba(4,8,18,.04) 45%, #080c1c),
+    url("./chess-banner.jpg") center / cover no-repeat,
+    #080c1c;
+}
+.brand-header-content {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  padding: 40px clamp(24px, 4vw, 64px);
+}
+.brand-header-row { align-items: start; }
+.brand-title { font-weight: 400; font-size: clamp(28px, 4vw, 58px); letter-spacing: -.045em; line-height: 1.1; }
+.landing-description { margin: 14px 0 auto; color: #b4bfd2; font-size: 15px; font-weight: 300; letter-spacing: .04em; }
+.brand-source { margin-top: auto; font-size: 11px; letter-spacing: .025em; }
+.dashboard-entry {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(205,177,115,.4);
+  text-decoration: none;
+  color: #d8c18a;
+  font-size: 12px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+.dashboard-entry span { font-size: 20px; line-height: 1; }
+.about-btn { background: rgba(8,12,28,.35); font-size: 11px; border-color: rgba(255,255,255,.22); border-radius: 0; letter-spacing: .08em; }
+.home-middle { padding-bottom: 32px; }
+.dashboard-heading { padding: 36px 0 28px; border-bottom: 1px solid var(--border); }
+.dashboard-heading .quarter-headline {
+  max-width: 44ch;
+  margin: 0;
+  font-size: clamp(23px, 2.4vw, 34px);
+  line-height: 1.28;
+  font-weight: 400;
+  letter-spacing: -.025em;
+}
+.home-middle .filter-strip { padding-block: 20px; }
+.home-middle .toolbar-row { gap: 22px; grid-template-columns: auto minmax(0,1.5fr) repeat(2,minmax(0,1fr)); }
+.home-middle .toolbar-cluster > label { font-size: 10px; letter-spacing: .12em; font-weight: 400; }
+.home-middle select { background: #10172a; border-color: #283247; border-radius: 0; height: 40px; font-size: 13px; }
+.home-middle .view-tabs-row button { font-size: 12px; padding-block: 15px; letter-spacing: .025em; }
+.content-shell { gap: 28px; padding-top: 28px; grid-template-columns: minmax(0,1fr) minmax(300px,.37fr); }
+.home-middle .instrument-title, .change-panel h2 { font-size: 16px; font-weight: 400; letter-spacing: -.015em; }
+.chart-context { font-size: 11px; margin-top: 6px; }
+.home-middle .kpi-strip { gap: 0; margin: 24px 0; }
+.home-middle .kpi-item { background: transparent; border: 0; border-left: 1px solid #283247; padding: 0 16px; border-radius: 0; }
+.home-middle .kpi-item:first-child { padding-left: 0; border-left: 0; }
+.home-middle .kpi-label { font-weight: 400; font-size: 11px; letter-spacing: .015em; }
+.home-middle .kpi-value { font-weight: 400; margin-block: 10px 6px; font-size: clamp(18px,1.7vw,25px); }
+.home-middle .kpi-foot { font-size: 11px; }
+.home-middle .chart-stage-large { border-radius: 0; border-color: #253148; height: clamp(350px,46vh,560px); }
+.change-panel { border-radius: 0; padding: 20px 18px; background: #0b1122; border-color: #253148; }
+.change-panel h2 { margin-bottom: 20px; }
+.change-table { font-size: 11px; }
+.change-table strong { font-weight: 400; font-size: 13px; }
+.change-table span { font-size: 10px; }
+.change-table th, .change-table td { padding-block: 14px; }
+.benchmark-select summary { border-radius: 0; background: transparent; border-color: #344058; font-weight: 400; font-size: 11px; }
+.benchmark-options { border-radius: 0; }
+.regional-leaflet-map { background: #0b1222; }
+.regional-leaflet-map .leaflet-control-zoom { border: 1px solid #344058; border-radius: 0; box-shadow: none; }
+.regional-leaflet-map .leaflet-control-attribution { background: rgba(8,12,28,.85); font-size: 10px; }
+@media (max-width: 1000px) { .content-shell { grid-template-columns: minmax(0,1fr); } }
+@media (max-width: 620px) {
+  .brand-header { background-position: 58% center; }
+  .brand-header-content { padding: 24px 20px; }
+  .brand-title { max-width: 8ch; }
+  .landing-description { max-width: 22ch; font-size: 13px; }
+  .dashboard-heading { padding-block: 26px 22px; }
+  .home-middle .toolbar-row { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; }
+  .home-middle .kpi-strip { gap: 20px 0; }
+  .home-middle .kpi-item:nth-child(3) { border-left: 0; padding-left: 0; }
+  .home-middle .kpi-value { font-size: 20px; margin-block: 6px; }
+  .content-shell { padding-top: 22px; gap: 22px; }
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }

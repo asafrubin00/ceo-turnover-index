@@ -404,7 +404,9 @@ function renderFlagshipChart(context) {
 
 async function renderRegionalMapChart(context, cycle) {
   if (!context.mapRows.length) return false;
-  const leafletRendered = renderRegionalLeafletMap(context);
+  const countries = await loadWorldCountries();
+  if (cycle !== renderCycle) return true;
+  const leafletRendered = renderRegionalLeafletMap(context, countries);
   if (leafletRendered) return true;
 
   try {
@@ -416,8 +418,7 @@ async function renderRegionalMapChart(context, cycle) {
       return renderRegionalScatterFallback(context);
     }
 
-    const countries = await loadWorldCountries();
-    if (cycle !== renderCycle) return false;
+    if (cycle !== renderCycle) return true;
     if (!countries?.features?.length) return renderRegionalScatterFallback(context);
 
     const nodes = context.mapRows;
@@ -508,8 +509,8 @@ async function renderRegionalMapChart(context, cycle) {
   }
 }
 
-function renderRegionalLeafletMap(context) {
-  if (!window.L) return false;
+function renderRegionalLeafletMap(context, countries) {
+  if (!window.L || !countries) return false;
   const nodes = context.mapRows;
   const scoped = nodes.filter((row) => indexCoordinates[row.displaySegment]);
   if (!scoped.length) return false;
@@ -527,13 +528,14 @@ function renderRegionalLeafletMap(context) {
     zoomControl: true,
     scrollWheelZoom: true,
     dragging: true,
-    worldCopyJump: true,
+    minZoom: 1,
+    maxZoom: 6,
   }).setView([24, 8], 2);
 
-  window.L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png", {
-    maxZoom: 8,
-    minZoom: 2,
-    attribution: "&copy; OpenStreetMap contributors &copy; CARTO",
+  window.L.geoJSON(countries, {
+    interactive: false,
+    style: { color: "#34445e", weight: 0.65, fillColor: "#18263c", fillOpacity: 1 },
+    attribution: '<a href="https://www.naturalearthdata.com/">Natural Earth</a>',
   }).addTo(map);
 
   const layer = window.L.featureGroup().addTo(map);
@@ -588,14 +590,13 @@ function renderRegionalLeafletMap(context) {
 async function loadWorldCountries() {
   if (!worldCountriesPromise) {
     worldCountriesPromise = fetchWithTimeout(
-      "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json",
+      "./assets/world-countries.json",
       4500
     )
       .then((response) => {
         if (!response.ok) throw new Error("world map fetch failed");
         return response.json();
       })
-      .then((world) => window.topojson.feature(world, world.objects.countries))
       .catch((error) => {
         console.warn("Unable to load world map data", error);
         return null;
