@@ -17,7 +17,7 @@
       integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
       crossorigin=""
     />
-    <link rel="stylesheet" href="./styles.css?v=turnover-dashboard-2026-11" />
+    <link rel="stylesheet" href="./styles.css?v=turnover-design-2026-11-21" />
   </head>
   <body class="app-shell home-page">
     <div class="page yahoo-shell">
@@ -27,12 +27,16 @@
             <h1 class="brand-title">CEO Turnover Index</h1>
             <button class="about-btn" id="about-btn" type="button" aria-haspopup="dialog">About</button>
           </div>
-          <p class="quarter-headline" id="quarter-headline" aria-live="polite">Loading CEO turnover data…</p>
+          <p class="landing-description">Global leadership. In perspective.</p>
           <p class="brand-source">Source <a href="https://www.russellreynolds.com/en/insights/reports-surveys/global-ceo-turnover-index" target="_blank" rel="noopener noreferrer">Russell Reynolds Associates</a></p>
+          <a class="dashboard-entry" href="#dashboard">Explore the index <span aria-hidden="true">↓</span></a>
         </div>
       </header>
 
-      <main class="home-middle">
+      <main class="home-middle" id="dashboard">
+        <div class="dashboard-heading">
+          <p class="quarter-headline" id="quarter-headline" aria-live="polite">Loading CEO turnover data…</p>
+        </div>
         <section class="filter-strip">
           <div class="toolbar-row">
             <div class="toolbar-cluster toolbar-toggle" id="scope-toggle" role="group" aria-label="Benchmark type">
@@ -108,7 +112,7 @@
           </div>
 
           <aside class="change-panel" aria-labelledby="change-title">
-            <h2 id="change-title">What changed</h2>
+            <h2 id="change-title">Quarterly comparison</h2>
             <div id="change-output" aria-live="polite"></div>
           </aside>
         </section>
@@ -133,6 +137,6 @@
       integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
       crossorigin=""
     ></script>
-    <script type="module" src="./app.js?v=turnover-dashboard-2026-11"></script>
+    <script type="module" src="./app.js?v=turnover-design-2026-11-21"></script>
   </body>
 </html>
