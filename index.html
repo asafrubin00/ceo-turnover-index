@@ -83,6 +83,13 @@
                 <p class="chart-context" id="chart-context"></p>
                 <h2 class="chart-title" id="chart-title">Quarterly turnover</h2>
               </div>
+              <div class="chart-panel__tools">
+              <div class="range-control" id="range-control" role="group" aria-label="Chart time range" hidden>
+                <label class="field field--compact"><span class="visually-hidden">From quarter</span><select id="range-from"></select></label>
+                <span class="range-control__sep" aria-hidden="true">to</span>
+                <label class="field field--compact"><span class="visually-hidden">To quarter</span><select id="range-to"></select></label>
+                <button class="text-button" type="button" id="range-reset" hidden>Full range</button>
+              </div>
               <details class="benchmark-select" id="benchmark-select" hidden>
                 <summary id="benchmark-summary">Compare benchmarks</summary>
                 <fieldset class="benchmark-options" id="benchmark-options">
@@ -90,6 +97,7 @@
                   <div class="benchmark-list" id="benchmark-list"></div>
                 </fieldset>
               </details>
+              </div>
             </div>
             <div class="chart-stage chart-stage-large" id="main-chart"></div>
           </div>

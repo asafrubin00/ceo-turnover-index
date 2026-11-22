@@ -30,7 +30,16 @@ const els = {
   mainChart: document.getElementById("main-chart"),
   changeOutput: document.getElementById("change-output"),
   tooltip: document.getElementById("tooltip"),
+  rangeControl: document.getElementById("range-control"),
+  rangeFrom: document.getElementById("range-from"),
+  rangeTo: document.getElementById("range-to"),
+  rangeReset: document.getElementById("range-reset"),
 };
+
+// Chart zoom: a From/To quarter window applied to the time-series views only.
+// Headline, KPIs and the comparison rail keep describing the latest selected quarter.
+const TIME_VIEWS = new Set(["flagship", "tenure", "gender"]);
+const zoom = { from: null, to: null };
 
 const charts = {
   primary: null,
@@ -134,6 +143,7 @@ function bindEvents() {
     if (!button || button.dataset.scope === state.scope) return;
     state.scope = button.dataset.scope;
     state.benchmarks = [];
+    resetZoom();
     updatePressedButtons(els.scopeToggle, button);
     refreshSegmentOptions();
     render();
@@ -151,6 +161,7 @@ function bindEvents() {
   for (const key of ["segment", "year", "quarter"]) {
     els[`${key}Select`].addEventListener("change", (event) => {
       state[key] = event.target.value;
+      if (key !== "segment") resetZoom();
       if (key === "segment") {
         state.benchmarks = state.benchmarks.filter((segment) => segment !== state.segment);
         refreshBenchmarkOptions();
@@ -158,6 +169,24 @@ function bindEvents() {
       render();
     });
   }
+
+  els.rangeFrom.addEventListener("change", () => {
+    zoom.from = Number(els.rangeFrom.value);
+    if (zoom.to !== null && zoom.from > zoom.to) zoom.to = zoom.from;
+    render();
+  });
+
+  els.rangeTo.addEventListener("change", () => {
+    zoom.to = Number(els.rangeTo.value);
+    if (zoom.from !== null && zoom.to < zoom.from) zoom.from = zoom.to;
+    render();
+  });
+
+  els.rangeReset.addEventListener("click", () => {
+    resetZoom();
+    render();
+    els.rangeFrom.focus();
+  });
 
   els.benchmarkList.addEventListener("change", () => {
     state.benchmarks = Array.from(els.benchmarkList.querySelectorAll("input:checked"), (input) => input.value);
@@ -227,7 +256,45 @@ function render() {
   updateHomeMeta(context, els, state.view);
   renderQuarterHeadline(context);
   renderChanges(context);
-  return renderMainView(context, cycle);
+  const chartContext = applyZoom(context);
+  return renderMainView(chartContext, cycle);
+}
+
+function resetZoom() {
+  zoom.from = null;
+  zoom.to = null;
+}
+
+function applyZoom(context) {
+  const periods = context.visibleSeries.map((row) => ({ value: row.sortValue, label: row.periodLabel }));
+  const showRange = TIME_VIEWS.has(state.view) && periods.length > 1;
+  els.rangeControl.hidden = !showRange;
+  if (!showRange) return context;
+
+  const first = periods[0].value;
+  const last = periods.at(-1).value;
+  const clamp = (value, fallback) => (value === null ? fallback : Math.min(Math.max(value, first), last));
+  const from = clamp(zoom.from, first);
+  const to = clamp(zoom.to, last);
+  const options = periods.map(({ value, label }) => `<option value="${value}">${label}</option>`).join("");
+  els.rangeFrom.innerHTML = options;
+  els.rangeTo.innerHTML = options;
+  els.rangeFrom.value = String(from);
+  els.rangeTo.value = String(to);
+
+  const zoomed = from !== first || to !== last;
+  els.rangeReset.hidden = !zoomed;
+  if (!zoomed) return context;
+
+  const inRange = (row) => row.sortValue >= from && row.sortValue <= to;
+  const labelFor = (value) => periods.find((period) => period.value === value)?.label ?? "";
+  els.chartContext.textContent = `${els.chartContext.textContent} · showing ${labelFor(from)} – ${labelFor(to)}`;
+  return {
+    ...context,
+    visibleSeries: context.visibleSeries.filter(inRange),
+    benchmarkSeries: context.benchmarkSeries.map((series) => ({ ...series, rows: series.rows.filter(inRange) })),
+    genderTimeline: context.genderTimeline.filter(inRange),
+  };
 }
 
 function renderQuarterHeadline(context) {
@@ -365,7 +432,7 @@ function renderFlagshipChart(context) {
         borderColor: line.color,
         backgroundColor: line.color,
         borderDash: line.dash,
-        pointRadius: 0,
+        pointRadius: periods.length <= 16 ? 2.5 : 0,
         pointHoverRadius: 3.5,
         borderWidth: 1.75,
         tension: 0,
@@ -1127,16 +1194,19 @@ function buildDonutChart(canvas, values) {
     id: "centerText",
     afterDraw(chart) {
       const { ctx } = chart;
-      const total = chart.data.datasets[0].data.reduce((sum, value) => sum + value, 0);
-      const text = `${total.toFixed(1)}%`;
+      // Centre shows the internal share (the two slices always sum to 100%).
+      const internal = chart.data.datasets[0].data[0];
       const meta = chart.getDatasetMeta(0).data[0];
-      if (!meta) return;
+      if (!meta || !Number.isFinite(internal)) return;
       ctx.save();
-      ctx.fillStyle = THEME.ink;
-      ctx.font = "500 20px 'Cormorant Garamond', Georgia, serif";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      ctx.fillText(text, meta.x, meta.y);
+      ctx.fillStyle = THEME.ink;
+      ctx.font = "500 24px 'Cormorant Garamond', Georgia, serif";
+      ctx.fillText(`${internal.toFixed(1)}%`, meta.x, meta.y - 6);
+      ctx.fillStyle = THEME.muted;
+      ctx.font = "400 10px 'Inter', system-ui, sans-serif";
+      ctx.fillText("INTERNAL", meta.x, meta.y + 14);
       ctx.restore();
     },
   };

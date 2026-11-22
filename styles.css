@@ -618,6 +618,36 @@ input {
   color: var(--ink) !important;
 }
 
+/* Chart tools: time range and benchmark picker */
+.chart-panel__tools {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px 14px;
+}
+
+.range-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.range-control[hidden] {
+  display: none;
+}
+
+.range-control__sep {
+  color: var(--muted);
+  font-size: var(--text-xs);
+}
+
+.field--compact select {
+  min-width: 96px;
+  height: 28px;
+  font-variant-numeric: tabular-nums;
+}
+
 /* Benchmark picker */
 .benchmark-select {
   position: relative;
@@ -1188,6 +1218,10 @@ input {
   .chart-panel__head {
     flex-wrap: wrap;
     align-items: flex-start;
+  }
+
+  .chart-panel__tools {
+    justify-content: flex-start;
   }
 
   .benchmark-options {
