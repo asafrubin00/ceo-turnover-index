@@ -11,15 +11,15 @@ import {
 } from "./data.js";
 
 const palette = {
-  incoming: "#69bcc2",
-  outgoing: "#e3a383",
-  tenure: "#d9c59a",
-  women: "#cfb57f",
-  men: "#75b0bf",
-  internal: "#75b0bf",
-  external: "#8397b2",
-  neutral: "#65788f",
-  spotlight: "#cdb57a",
+  incoming: "#7f9fbd",
+  outgoing: "#b39a62",
+  tenure: "#b39a62",
+  women: "#b39a62",
+  men: "#7f9fbd",
+  internal: "#7f9fbd",
+  external: "#b39a62",
+  neutral: "#4a5f75",
+  spotlight: "#b39a62",
 };
 
 const mapCoordinates = {
@@ -164,7 +164,7 @@ export function buildAnalysisSummary(context, view) {
   };
 }
 
-const benchmarkColors = ["#60aef2", "#65d6b6", "#ea8cbd", "#b49bf0", "#f68e77", "#9bbc66", "#65c6dc"];
+const benchmarkColors = ["#7f9fbd", "#8fb3a4", "#b07f62", "#9a8fb8", "#c08c5c", "#8c8a62", "#6f93b0"];
 
 export function getTrendData(context) {
   const { state, visibleSeries, benchmarkSeries } = context;
@@ -179,12 +179,12 @@ export function getTrendData(context) {
         label: displayLabel(segment),
         rows,
         flow: "outgoing",
-        color: index === 0 ? "#e0b451" : benchmarkColors[(index - 1) % benchmarkColors.length],
+        color: index === 0 ? "#b39a62" : benchmarkColors[(index - 1) % benchmarkColors.length],
         dash: index > benchmarkColors.length ? [3, 4] : [],
       }))
     : [
-        { label: "Departures", rows: visibleSeries, flow: "outgoing", color: "#e0b451", dash: [] },
-        { label: "Appointments", rows: visibleSeries, flow: "incoming", color: "#60aef2", dash: [] },
+        { label: "Departures", rows: visibleSeries, flow: "outgoing", color: "#b39a62", dash: [] },
+        { label: "Appointments", rows: visibleSeries, flow: "incoming", color: "#7f9fbd", dash: [] },
       ];
   const lines = definitions.map(({ label, rows, flow, color, dash }) => {
     const rowsByPeriod = new Map(rows.map((row) => [row.sortValue, row]));
@@ -265,7 +265,7 @@ function renderRegionalChart(container, context) {
           const selected = row.segment === context.state.segment;
           return `
             <g class="map-node" data-tooltip="<strong>${row.displaySegment}</strong><span>${row.periodLabel}<br />Outgoing rate ${formatPct(row.outgoingPct)}<br />Outgoing count ${formatCount(row.outgoingCount)}</span>">
-              <circle cx="${coord.x}" cy="${coord.y}" r="${radius + (selected ? 6 : 3)}" fill="${selected ? "rgba(216,193,137,0.18)" : "rgba(132,208,205,0.12)"}" />
+              <circle cx="${coord.x}" cy="${coord.y}" r="${radius + (selected ? 6 : 3)}" fill="${selected ? "rgba(179,154,98,0.2)" : "rgba(127,159,189,0.14)"}" />
               <circle cx="${coord.x}" cy="${coord.y}" r="${radius}" fill="${selected ? palette.spotlight : palette.incoming}" />
               <text x="${coord.x}" y="${coord.y - radius - 8}" text-anchor="middle" class="tick-text">${row.displaySegment}</text>
             </g>
@@ -299,8 +299,8 @@ function renderSegmentChart(container, rows, currentSegment) {
           const active = row.segment === currentSegment;
           return `
             <text x="${margin.left - 9}" y="${y + 11}" text-anchor="end" class="tick-text">${row.displaySegment}</text>
-            <rect x="${margin.left}" y="${y}" width="${innerWidth}" height="13" rx="6.5" fill="rgba(255,255,255,0.045)" />
-            <rect x="${margin.left}" y="${y}" width="${widthValue}" height="13" rx="6.5" fill="${active ? palette.spotlight : palette.neutral}" class="chart-pill" data-tooltip="<strong>${row.displaySegment}</strong><span>${row.periodLabel}<br />Outgoing rate ${formatPct(row.outgoingPct)}<br />Outgoing count ${formatCount(row.outgoingCount)}</span>" />
+            <rect x="${margin.left}" y="${y}" width="${innerWidth}" height="12" rx="2" fill="rgba(46,59,79,0.35)" />
+            <rect x="${margin.left}" y="${y}" width="${widthValue}" height="12" rx="2" fill="${active ? palette.spotlight : palette.neutral}" class="chart-pill" data-tooltip="<strong>${row.displaySegment}</strong><span>${row.periodLabel}<br />Outgoing rate ${formatPct(row.outgoingPct)}<br />Outgoing count ${formatCount(row.outgoingCount)}</span>" />
             <text x="${margin.left + widthValue + 6}" y="${y + 10.5}" class="value-text">${formatPct(row.outgoingPct)}</text>
           `;
         })
@@ -332,8 +332,8 @@ function renderTenureChart(container, rows) {
           const x = xFor(index);
           const y = yFor(row.avgOutgoingTenureYears);
           return `
-            <line x1="${x}" y1="${margin.top + innerHeight}" x2="${x}" y2="${y}" stroke="rgba(217,197,154,0.16)" stroke-width="1.2" />
-            <circle cx="${x}" cy="${y}" r="3.8" fill="${palette.tenure}" data-tooltip="<strong>${row.periodLabel}</strong><span>Outgoing tenure ${formatYears(row.avgOutgoingTenureYears)}</span>" />
+            <line x1="${x}" y1="${margin.top + innerHeight}" x2="${x}" y2="${y}" stroke="rgba(179,154,98,0.22)" stroke-width="1" />
+            <circle cx="${x}" cy="${y}" r="3" fill="${palette.tenure}" data-tooltip="<strong>${row.periodLabel}</strong><span>Outgoing tenure ${formatYears(row.avgOutgoingTenureYears)}</span>" />
           `;
         })
         .join("")}
@@ -380,7 +380,7 @@ function renderCompositionChart(container, rows, type) {
                 const y = cursor;
                 cursor += h;
                 return `
-                  <rect x="${x}" y="${y}" width="${barWidth}" height="${h}" rx="10" fill="${colors[part.splitValue]}" class="chart-bar" data-tooltip="<strong>${capitalize(flow)} · ${part.splitValue}</strong><span>${part.periodLabel}<br />Share ${formatPct(part.pctValue)}<br />Count ${formatCount(part.countValue)}</span>" />
+                  <rect x="${x}" y="${y}" width="${barWidth}" height="${h}" rx="2" fill="${colors[part.splitValue]}" class="chart-bar" data-tooltip="<strong>${capitalize(flow)} · ${part.splitValue}</strong><span>${part.periodLabel}<br />Share ${formatPct(part.pctValue)}<br />Count ${formatCount(part.countValue)}</span>" />
                   <text x="${x + barWidth / 2}" y="${y + h / 2 + 4}" text-anchor="middle" class="value-text">${h > 34 ? formatPct(part.pctValue) : ""}</text>
                 `;
               })
@@ -392,7 +392,7 @@ function renderCompositionChart(container, rows, type) {
       ${ordered
         .map(
           (value, index) => `
-            <rect x="${24 + index * 138}" y="188" width="9" height="9" rx="4.5" fill="${colors[value]}" />
+            <rect x="${24 + index * 138}" y="188" width="9" height="9" rx="2" fill="${colors[value]}" />
             <text x="${38 + index * 138}" y="196" class="legend-text">${value}</text>
           `
         )

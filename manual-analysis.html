@@ -4,85 +4,45 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Manual Analysis | Global CEO Turnover Index</title>
-    <link rel="stylesheet" href="./styles.css?v=turnover-dashboard-2026-11" />
+    <link rel="icon" type="image/svg+xml" href="./assets/logo-mark.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles.css?v=desk-2026-11-22" />
   </head>
-  <body class="app-shell manual-page">
+  <body class="manual-page">
     <div class="page">
-      <section class="hero-shell hero-manual">
-        <div class="hero-image"></div>
-
-        <div class="hero-top">
-          <div class="intro-panel">
-            <div class="brand-cluster">
-              <div class="logo-tile">
-                <img src="./Design/Logo inspiration.jpg" alt="" />
-              </div>
-              <div class="title-block">
-                <h1>Global CEO Turnover Index</h1>
-                <p class="intro-copy">
-                  Manual Analysis shows the full chart suite under one shared filter state.
-                </p>
-                <p class="source-line">
-                  Data sourced from
-                  <a href="https://www.russellreynolds.com/en/insights/reports-surveys/global-ceo-turnover-index" target="_blank" rel="noreferrer">Russell Reynolds Associates</a>
-                </p>
-                <div class="manual-links">
-                  <a href="./index.html">Back to dashboard</a>
-                </div>
-              </div>
-            </div>
-          </div>
+      <header class="manual-header">
+        <div>
+          <a class="manual-back" href="./index.html">← Dashboard</a>
+          <h1>CEO Turnover Index <span>· Manual analysis</span></h1>
+          <p>The full chart suite under one shared filter state. Data from <a href="https://www.russellreynolds.com/en/insights/reports-surveys/global-ceo-turnover-index" target="_blank" rel="noreferrer">Russell Reynolds Associates</a>.</p>
         </div>
-      </section>
+      </header>
 
-      <section class="control-rail">
-        <div class="control-rail-inner">
-          <div class="filter-panel">
-            <div class="filter-grid">
-              <div class="filter-field">
-                <label for="scope-toggle">View</label>
-                <div class="toggle-shell" id="scope-toggle">
-                  <button class="active" data-scope="index">Index</button>
-                  <button data-scope="industry">Industry</button>
-                </div>
-              </div>
-
-              <div class="filter-field">
-                <label for="segment-select">Segment</label>
-                <div class="select-shell">
-                  <select id="segment-select"></select>
-                </div>
-              </div>
-
-              <div class="filter-field">
-                <label for="year-select">Year</label>
-                <div class="select-shell">
-                  <select id="year-select"></select>
-                </div>
-              </div>
-
-              <div class="filter-field">
-                <label for="quarter-select">Quarter</label>
-                <div class="select-shell">
-                  <select id="quarter-select">
-                    <option value="All">All quarters</option>
-                    <option value="1">Q1</option>
-                    <option value="2">Q2</option>
-                    <option value="3">Q3</option>
-                    <option value="4">Q4</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-            <p class="coverage-line" id="coverage-note">Loading coverage note</p>
-          </div>
+      <div class="toolbar manual-toolbar">
+        <div class="segmented" id="scope-toggle" role="group" aria-label="View">
+          <button type="button" class="active" data-scope="index">Index</button>
+          <button type="button" data-scope="industry">Industry</button>
         </div>
-      </section>
+        <label class="field field--wide"><span class="visually-hidden">Segment</span><select id="segment-select"></select></label>
+        <label class="field"><span class="visually-hidden">Year</span><select id="year-select"></select></label>
+        <label class="field"><span class="visually-hidden">Quarter</span>
+          <select id="quarter-select">
+            <option value="All">All quarters</option>
+            <option value="1">Q1</option>
+            <option value="2">Q2</option>
+            <option value="3">Q3</option>
+            <option value="4">Q4</option>
+          </select>
+        </label>
+        <p class="coverage-line" id="coverage-note">Loading coverage note</p>
+      </div>
 
       <section class="kpi-strip" id="kpi-strip"></section>
 
       <main class="manual-grid">
-        <section class="chart-card chart-card-wide">
+        <section class="panel chart-card chart-card-wide">
           <div class="chart-shell-head">
             <div>
               <p class="panel-kicker">Flagship trend</p>
@@ -95,7 +55,7 @@
           <div class="chart-stage chart-stage-large" id="flagship-chart"></div>
         </section>
 
-        <section class="chart-card">
+        <section class="panel chart-card">
           <div class="chart-shell-head">
             <div>
               <p class="panel-kicker">Regional reference</p>
@@ -105,7 +65,7 @@
           <div class="chart-stage" id="regional-chart"></div>
         </section>
 
-        <section class="chart-card">
+        <section class="panel chart-card">
           <div class="chart-shell-head">
             <div>
               <p class="panel-kicker">Segment view</p>
@@ -115,7 +75,7 @@
           <div class="chart-stage" id="segment-chart"></div>
         </section>
 
-        <section class="chart-card">
+        <section class="panel chart-card">
           <div class="chart-shell-head">
             <div>
               <p class="panel-kicker">Tenure</p>
@@ -125,7 +85,7 @@
           <div class="chart-stage" id="tenure-chart"></div>
         </section>
 
-        <section class="chart-card">
+        <section class="panel chart-card">
           <div class="chart-shell-head">
             <div>
               <p class="panel-kicker">Gender</p>
@@ -135,7 +95,7 @@
           <div class="chart-stage" id="gender-chart"></div>
         </section>
 
-        <section class="chart-card">
+        <section class="panel chart-card">
           <div class="chart-shell-head">
             <div>
               <p class="panel-kicker">Internal versus external</p>
@@ -148,6 +108,6 @@
     </div>
 
     <div class="tooltip" id="tooltip" hidden></div>
-    <script type="module" src="./manual-analysis.js?v=turnover-dashboard-2026-11"></script>
+    <script type="module" src="./manual-analysis.js?v=desk-2026-11-22"></script>
   </body>
 </html>

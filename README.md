@@ -42,7 +42,7 @@ CEO turnover sits at the heart of corporate governance - it's where board accoun
 ![HTML](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
 ![CSS](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
 
-Vanilla JS, HTML, CSS - deployed on Vercel. Optional OpenAI-backed analysis route via Vercel serverless function (requires `OPENAI_API_KEY` environment variable).
+Vanilla JS, HTML, CSS - deployed on Vercel. The visual design (Inter and Cormorant Garamond, ink navy with a brass accent) is shared with the [governance research hub](https://github.com/asafrubin00/governance-dissent-dashboard). The landing image `assets/chess-hero.jpg` is the original `chess-banner.jpg`, enlarged 4x with Real-ESRGAN and extended onto a black canvas for full-screen use. Optional OpenAI-backed analysis route via Vercel serverless function (requires `OPENAI_API_KEY` environment variable).
 
 ---
 

@@ -75,7 +75,42 @@ async function fetchWithTimeout(url, timeoutMs = 4500) {
 }
 
 const aboutDialog = document.getElementById("about-dialog");
-document.getElementById("about-btn").addEventListener("click", () => aboutDialog.showModal());
+document.querySelectorAll("[data-about]").forEach((button) => button.addEventListener("click", () => aboutDialog.showModal()));
+
+// Shared chart styling, matching the governance hub (RubiCo Desk palette).
+const THEME = {
+  ink: "#e9e2d0",
+  ink2: "#c5bfae",
+  muted: "#958f80",
+  grid: "rgba(46, 59, 79, 0.55)",
+  surface: "#111a26",
+  gold: "#b39a62",
+  goldSoft: "rgba(179, 154, 98, 0.55)",
+  blue: "#7f9fbd",
+  blueSoft: "rgba(127, 159, 189, 0.5)",
+  slate: "#4a5f75",
+  font: "'Inter', system-ui, sans-serif",
+};
+
+if (hasChartJs()) {
+  window.Chart.defaults.font.family = THEME.font;
+  window.Chart.defaults.font.size = 11;
+  window.Chart.defaults.color = THEME.muted;
+  window.Chart.defaults.borderColor = THEME.grid;
+  Object.assign(window.Chart.defaults.plugins.tooltip, {
+    backgroundColor: "#162130",
+    borderColor: "#2e3b4f",
+    borderWidth: 1,
+    titleColor: THEME.muted,
+    bodyColor: THEME.ink,
+    titleFont: { family: THEME.font, size: 11, weight: "500" },
+    bodyFont: { family: THEME.font, size: 12 },
+    padding: 9,
+    cornerRadius: 4,
+    boxPadding: 4,
+    displayColors: true,
+  });
+}
 
 initialize();
 
@@ -330,9 +365,10 @@ function renderFlagshipChart(context) {
         borderColor: line.color,
         backgroundColor: line.color,
         borderDash: line.dash,
-        pointRadius: 2.6,
-        pointHoverRadius: 4,
-        borderWidth: 2,
+        pointRadius: 0,
+        pointHoverRadius: 3.5,
+        borderWidth: 1.75,
+        tension: 0,
       })),
     },
     options: {
@@ -347,10 +383,11 @@ function renderFlagshipChart(context) {
       interaction: { intersect: false, mode: "index" },
       scales: {
         x: {
-          grid: { color: "rgba(255,255,255,0.05)" },
+          grid: { display: false },
+          border: { color: THEME.grid },
           ticks: {
             display: true,
-            color: "rgba(232,234,240,0.78)",
+            color: THEME.muted,
             font: { size: 11 },
             padding: 8,
             autoSkip: true,
@@ -362,10 +399,12 @@ function renderFlagshipChart(context) {
         },
         y: {
           beginAtZero: true,
-          grid: { color: "rgba(255,255,255,0.05)" },
+          grid: { color: THEME.grid },
+          border: { display: false },
           ticks: {
-            color: "rgba(232,234,240,0.55)",
+            color: THEME.muted,
             font: { size: 11 },
+            maxTicksLimit: 6,
             callback: (v) => `${Number(v).toFixed(1)}%`,
           },
         },
@@ -374,13 +413,13 @@ function renderFlagshipChart(context) {
         legend: {
           display: true,
           position: "top",
-          align: "center",
+          align: "end",
           labels: {
-            color: "rgba(232, 234, 240, 0.92)",
-            font: { family: "'IBM Plex Sans', sans-serif", size: 13, weight: "500" },
-            boxWidth: 22,
-            boxHeight: 3,
-            padding: 12,
+            color: THEME.ink2,
+            font: { family: THEME.font, size: 11 },
+            boxWidth: 16,
+            boxHeight: 2,
+            padding: 14,
             usePointStyle: true,
             pointStyle: "line",
             pointStyleWidth: 28,
@@ -459,11 +498,11 @@ async function renderRegionalMapChart(context, cycle) {
             label: "CEO Turnover",
             outline: countries,
             showOutline: true,
-            outlineBackgroundColor: "rgba(26, 32, 48, 0.9)",
-            outlineBorderColor: "rgba(255,255,255,0.10)",
+            outlineBackgroundColor: "#162130",
+            outlineBorderColor: "#2e3b4f",
             data: bubblesArray,
-            backgroundColor: "rgba(77, 158, 218, 0.75)",
-            borderColor: "rgba(77, 158, 218, 1)",
+            backgroundColor: THEME.goldSoft,
+            borderColor: THEME.gold,
             borderWidth: 1,
             radius: (ctx) => ctx.raw?.r ?? 6,
           },
@@ -534,7 +573,7 @@ function renderRegionalLeafletMap(context, countries) {
 
   window.L.geoJSON(countries, {
     interactive: false,
-    style: { color: "#34445e", weight: 0.65, fillColor: "#18263c", fillOpacity: 1 },
+    style: { color: "#2e3b4f", weight: 0.6, fillColor: "#162130", fillOpacity: 1 },
     attribution: '<a href="https://www.naturalearthdata.com/">Natural Earth</a>',
   }).addTo(map);
 
@@ -554,10 +593,10 @@ function renderRegionalLeafletMap(context, countries) {
 
     const marker = window.L.circleMarker([lat, lon], {
       radius,
-      color: "rgba(74, 158, 218, 1)",
-      weight: 1.5,
-      fillColor: "rgba(74, 158, 218, 0.7)",
-      fillOpacity: 0.82,
+      color: THEME.gold,
+      weight: 1,
+      fillColor: THEME.gold,
+      fillOpacity: 0.5,
     });
 
     marker.bindTooltip(
@@ -643,8 +682,8 @@ function renderRegionalScatterFallback(context) {
         {
           label: "CEO Turnover",
           data: bubbleData,
-          backgroundColor: "rgba(77, 158, 218, 0.75)",
-          borderColor: "rgba(77, 158, 218, 1)",
+          backgroundColor: THEME.goldSoft,
+          borderColor: THEME.gold,
           borderWidth: 1,
           pointRadius: (ctx) => ctx.raw?.r ?? 6,
           pointHoverRadius: (ctx) => (ctx.raw?.r ?? 6) + 2,
@@ -671,14 +710,14 @@ function renderRegionalScatterFallback(context) {
         x: {
           min: -180,
           max: 180,
-          grid: { color: "rgba(255,255,255,0.05)" },
-          ticks: { color: "rgba(232,234,240,0.45)", font: { size: 10 } },
+          grid: { color: THEME.grid },
+          ticks: { color: THEME.muted, font: { size: 10 } },
         },
         y: {
           min: -60,
           max: 85,
-          grid: { color: "rgba(255,255,255,0.05)" },
-          ticks: { color: "rgba(232,234,240,0.45)", font: { size: 10 } },
+          grid: { color: THEME.grid },
+          ticks: { color: THEME.muted, font: { size: 10 } },
         },
       },
     },
@@ -848,16 +887,12 @@ function renderSegmentChartCompact(context) {
           data: rows.map((row) => Number(row.outgoingPct || 0)),
           backgroundColor: rows.map((row) =>
             row.segment === context.state.segment
-              ? "rgba(212, 168, 67, 0.82)"
-              : "rgba(74, 158, 218, 0.62)"
+              ? THEME.gold
+              : THEME.slate
           ),
-          borderColor: rows.map((row) =>
-            row.segment === context.state.segment
-              ? "rgba(212, 168, 67, 1)"
-              : "rgba(74, 158, 218, 0.88)"
-          ),
-          borderWidth: 1,
-          borderRadius: 3,
+          borderWidth: 0,
+          borderRadius: 2,
+          maxBarThickness: 14,
         },
       ],
     },
@@ -869,7 +904,7 @@ function renderSegmentChartCompact(context) {
         y: {
           ticks: {
             font: { size: 11 },
-            color: "rgba(232,234,240,0.55)",
+            color: THEME.ink2,
             autoSkip: false,
             maxRotation: 0,
           },
@@ -878,10 +913,11 @@ function renderSegmentChartCompact(context) {
         x: {
           ticks: {
             font: { size: 10 },
-            color: "rgba(232,234,240,0.40)",
+            color: THEME.muted,
             callback: (v) => `${v}%`,
           },
-          grid: { color: "rgba(255,255,255,0.05)" },
+          grid: { color: THEME.grid },
+          border: { display: false },
           beginAtZero: true,
         },
       },
@@ -894,6 +930,7 @@ function renderSegmentChartCompact(context) {
           },
         },
       },
+      animation: false,
       barPercentage: 0.65,
       categoryPercentage: 0.88,
       layout: { padding: { bottom: 8 } },
@@ -919,22 +956,26 @@ function renderGenderChart(context) {
         {
           label: "Incoming Female",
           data: rows.map((row) => row.incomingFemale),
-          backgroundColor: "rgba(212, 168, 67, 0.85)",
+          backgroundColor: THEME.gold,
+          borderRadius: 1,
         },
         {
           label: "Incoming Male",
           data: rows.map((row) => row.incomingMale),
-          backgroundColor: "rgba(74, 158, 218, 0.75)",
+          backgroundColor: THEME.blue,
+          borderRadius: 1,
         },
         {
           label: "Outgoing Female",
           data: rows.map((row) => row.outgoingFemale),
-          backgroundColor: "rgba(212, 168, 67, 0.58)",
+          backgroundColor: THEME.goldSoft,
+          borderRadius: 1,
         },
         {
           label: "Outgoing Male",
           data: rows.map((row) => row.outgoingMale),
-          backgroundColor: "rgba(74, 158, 218, 0.48)",
+          backgroundColor: THEME.blueSoft,
+          borderRadius: 1,
         },
       ],
     },
@@ -943,13 +984,15 @@ function renderGenderChart(context) {
       maintainAspectRatio: false,
       scales: {
         x: {
-          grid: { color: "rgba(255,255,255,0.05)" },
-          ticks: { color: "rgba(232,234,240,0.55)", font: { size: 11 } },
+          grid: { display: false },
+          border: { color: THEME.grid },
+          ticks: { color: THEME.muted, font: { size: 11 }, maxRotation: 0, autoSkipPadding: 12 },
         },
         y: {
-          grid: { color: "rgba(255,255,255,0.05)" },
+          grid: { color: THEME.grid },
+          border: { display: false },
           ticks: {
-            color: "rgba(232,234,240,0.55)",
+            color: THEME.muted,
             font: { size: 11 },
             callback: (v) => `${v}%`,
           },
@@ -961,10 +1004,10 @@ function renderGenderChart(context) {
           display: true,
           position: "bottom",
           labels: {
-            color: "rgba(232,234,240,0.70)",
-            font: { family: "'IBM Plex Sans', sans-serif", size: 11 },
-            boxWidth: 10,
-            boxHeight: 10,
+            color: THEME.ink2,
+            font: { family: THEME.font, size: 11 },
+            boxWidth: 9,
+            boxHeight: 9,
             padding: 14,
           },
         },
@@ -974,8 +1017,9 @@ function renderGenderChart(context) {
           },
         },
       },
-      barPercentage: 0.65,
-      categoryPercentage: 0.75,
+      animation: false,
+      barPercentage: 0.7,
+      categoryPercentage: 0.72,
     },
   });
 
@@ -1088,8 +1132,8 @@ function buildDonutChart(canvas, values) {
       const meta = chart.getDatasetMeta(0).data[0];
       if (!meta) return;
       ctx.save();
-      ctx.fillStyle = "rgba(232,234,240,0.85)";
-      ctx.font = "500 13px 'IBM Plex Mono'";
+      ctx.fillStyle = THEME.ink;
+      ctx.font = "500 20px 'Cormorant Garamond', Georgia, serif";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       ctx.fillText(text, meta.x, meta.y);
@@ -1105,15 +1149,16 @@ function buildDonutChart(canvas, values) {
       datasets: [
         {
           data: [values.internal, values.external],
-          backgroundColor: ["rgba(74,158,218,0.85)", "rgba(212,168,67,0.80)"],
-          borderColor: ["rgba(74,158,218,1)", "rgba(212,168,67,1)"],
-          borderWidth: 1.5,
-          hoverOffset: 4,
+          backgroundColor: [THEME.blue, THEME.gold],
+          borderColor: THEME.surface,
+          borderWidth: 2,
+          hoverOffset: 3,
         },
       ],
     },
     options: {
-      cutout: "68%",
+      cutout: "74%",
+      animation: false,
       responsive: true,
       maintainAspectRatio: true,
       plugins: {
@@ -1121,9 +1166,10 @@ function buildDonutChart(canvas, values) {
           display: true,
           position: "bottom",
           labels: {
-            color: "rgba(232,234,240,0.70)",
+            color: THEME.ink2,
             font: { size: 11 },
-            boxWidth: 10,
+            boxWidth: 9,
+            boxHeight: 9,
             padding: 12,
           },
         },
